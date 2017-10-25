@@ -83,7 +83,7 @@ public class IngredientsActivity extends AppCompatActivity
                     data.putExtra("reqBody", reqBody);
                     setResult(RESULT_OK, data);
                     startActivity(data);
-                    IngredientsActivity.this.finish();
+                    //IngredientsActivity.this.finish();
                 } /*catch (InterruptedException e)
                 {
                     e.printStackTrace();
