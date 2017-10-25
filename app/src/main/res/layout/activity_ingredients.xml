@@ -26,6 +26,6 @@
         android:gravity="center"
         android:layout_alignParentBottom="true"
         android:layout_gravity="bottom"
-        android:text="FIND"/>
+        android:text="@string/find_button"/>
 
 </RelativeLayout>

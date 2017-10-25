@@ -2,6 +2,7 @@
     <string name="app_name">FoodApp</string>
 
     <string name="ingredient_hint">enter ingredient</string>
+    <string name="find_button">FIND</string>
 
     <string-array name="number_strings">
         <item>один</item>
