@@ -22,10 +22,13 @@ import java.util.concurrent.ExecutionException;
 
 public class IngredientsActivity extends AppCompatActivity
 {
+    private static final String INGREDIENTS_KEY_ = "INGREDIENTS";
+
     private EditText mEditText;
     private ListView mListView;
     private Button mFindButton;
     private String reqBody;
+    private MyAdapter mAdapter;
     //private ArrayList<String> ingreds;
     private final ArrayList<String> ingredients = new ArrayList<>();
 
@@ -41,7 +44,6 @@ public class IngredientsActivity extends AppCompatActivity
         mFindButton = (Button) findViewById(R.id.find_button);
 
 
-        final MyAdapter mAdapter;
         mAdapter = new MyAdapter(this,
                 R.layout.ingredient_button, ingredients);
         mListView.setAdapter(mAdapter);
@@ -155,6 +157,25 @@ public class IngredientsActivity extends AppCompatActivity
             }
         }
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putStringArrayList(INGREDIENTS_KEY_, ingredients);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        ingredients.addAll(0, savedInstanceState.getStringArrayList(INGREDIENTS_KEY_));
     }
 
 }
