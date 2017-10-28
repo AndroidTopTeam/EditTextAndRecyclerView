@@ -4,20 +4,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 
 public class IngredientsActivity extends AppCompatActivity
@@ -25,11 +24,11 @@ public class IngredientsActivity extends AppCompatActivity
     private static final String INGREDIENTS_KEY_ = "INGREDIENTS";
 
     private EditText mEditText;
-    private ListView mListView;
+    private RecyclerView mRecyclerView;
     private Button mFindButton;
     private String reqBody;
     private MyAdapter mAdapter;
-    //private ArrayList<String> ingreds;
+    private RecyclerView.LayoutManager mLayoutManager;
     private final ArrayList<String> ingredients = new ArrayList<>();
 
     @Override
@@ -40,13 +39,17 @@ public class IngredientsActivity extends AppCompatActivity
         setContentView(R.layout.activity_ingredients);
 
         mEditText = (EditText) findViewById(R.id.edit_text);
-        mListView = (ListView) findViewById(R.id.list_view);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setHasFixedSize(true);
         mFindButton = (Button) findViewById(R.id.find_button);
+
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
 
         mAdapter = new MyAdapter(this,
-                R.layout.ingredient_button, ingredients);
-        mListView.setAdapter(mAdapter);
+                R.layout.ingredient_element, ingredients);
+        mRecyclerView.setAdapter(mAdapter);
 
         mEditText.setOnKeyListener(new View.OnKeyListener()
         {
@@ -99,27 +102,26 @@ public class IngredientsActivity extends AppCompatActivity
         });
     }
 
-    class MyAdapter extends ArrayAdapter<String>
+    public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
     {
         private LayoutInflater inflater;
         private int layout;
-        private ArrayList<String> mList;
+        private ArrayList<String> mDataSet;
 
-        MyAdapter(Context context, int resource, ArrayList<String> list)
+        public MyAdapter(Context context, int resource, ArrayList<String> list)
         {
-            super(context, resource, list);
-            this.mList = list;
-            this.layout = resource;
-            this.inflater = LayoutInflater.from(context);
+            mDataSet = list;
+            layout = resource;
+            inflater = LayoutInflater.from(context);
         }
-
+/*
         public View getView(final int position, View convertView, ViewGroup parent)
         {
 
             final ViewHolder viewHolder;
             if (convertView == null)
             {
-                convertView = inflater.inflate(this.layout, parent, false);
+                convertView = inflater.inflate(layout, parent, false);
                 viewHolder = new ViewHolder(convertView);
                 convertView.setTag(viewHolder);
             }
@@ -128,8 +130,8 @@ public class IngredientsActivity extends AppCompatActivity
                 viewHolder = (ViewHolder) convertView.getTag();
             }
 
-            final String str = mList.get(position);
-            viewHolder.name.setText(str);
+            final String str = mDataSet.get(position);
+            viewHolder.ingredient.setText(str);
 
 
             final MyAdapter adapter = this;
@@ -138,32 +140,54 @@ public class IngredientsActivity extends AppCompatActivity
                 @Override
                 public void onClick(View v)
                 {
-                    mList.remove(position);
+                    mDataSet.remove(position);
                     adapter.notifyDataSetChanged();
                 }
             });
             return convertView;
         }
-
-        private class ViewHolder
+*/
+        class ViewHolder extends RecyclerView.ViewHolder
         {
-            final Button button;
-            final TextView name;
+            public final Button button;
+            public final TextView ingredient;
 
             ViewHolder(View view)
             {
+                super(view);
                 button = view.findViewById(R.id.ingredient_button);
-                name = view.findViewById(R.id.name);
+                ingredient = view.findViewById(R.id.name);
             }
         }
 
-    }
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+        {
+            View view = inflater.inflate(layout, parent, false);
+            return new ViewHolder(view);
+        }
 
-    @Override
-    public void onResume() {
-        super.onResume();
+        @Override
+        public void onBindViewHolder(ViewHolder holder, final int position)
+        {
+            holder.ingredient.setText(mDataSet.get(position));
+            final MyAdapter adapter = this;
+            holder.button.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    mDataSet.remove(position);
+                    adapter.notifyDataSetChanged();
+                }
+            });
+        }
 
-        mAdapter.notifyDataSetChanged();
+        public int getItemCount()
+        {
+            return mDataSet.size();
+        }
+
     }
 
     @Override
