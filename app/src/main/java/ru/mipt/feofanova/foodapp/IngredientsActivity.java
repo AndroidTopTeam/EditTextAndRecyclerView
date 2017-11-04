@@ -19,7 +19,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 
-public class IngredientsActivity extends AppCompatActivity
 {
     private static final String INGREDIENTS_KEY_ = "INGREDIENTS";
 
@@ -28,8 +27,12 @@ public class IngredientsActivity extends AppCompatActivity
     private Button mFindButton;
     private String reqBody;
     private MyAdapter mAdapter;
+<<<<<<< HEAD
     private RecyclerView.LayoutManager mLayoutManager;
+=======
+>>>>>>> talgat
     private final ArrayList<String> ingredients = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -74,6 +77,7 @@ public class IngredientsActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
+<<<<<<< HEAD
 
                 try
                 {
@@ -98,11 +102,16 @@ public class IngredientsActivity extends AppCompatActivity
                 {
                     e.printStackTrace();
                 }
+=======
+>>>>>>> talgat
             }
         });
     }
 
+<<<<<<< HEAD
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
+=======
+>>>>>>> talgat
     {
         private LayoutInflater inflater;
         private int layout;
@@ -199,6 +208,28 @@ public class IngredientsActivity extends AppCompatActivity
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
+        ingredients.addAll(0, savedInstanceState.getStringArrayList(INGREDIENTS_KEY_));
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+
+        outState.putStringArrayList(INGREDIENTS_KEY_, ingredients);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState)
+    {
         ingredients.addAll(0, savedInstanceState.getStringArrayList(INGREDIENTS_KEY_));
     }
 

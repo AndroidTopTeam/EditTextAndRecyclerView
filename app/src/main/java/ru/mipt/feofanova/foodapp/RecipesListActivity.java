@@ -33,6 +33,7 @@ public class RecipesListActivity extends AppCompatActivity
         mRecyclerView.setLayoutManager(mLayoutManager);
         reqBody = getIntent().getStringExtra("reqBody");
         String[] tmp  = new String[reqBody.length()];
+<<<<<<< HEAD
         tmp = reqBody.split("\"");
 
         for(String s: tmp)
@@ -43,19 +44,9 @@ public class RecipesListActivity extends AppCompatActivity
         mAdapter = new MyAdapter(mDataset);
         mRecyclerView.setAdapter(mAdapter);
 
+=======
+>>>>>>> talgat
     }
-
-    /*@Override
-    protected void onActivityResult(int code, int result, Intent data)
-    {
-        if (result == RESULT_OK)
-        {
-            if (data.hasExtra("reqBody"))
-            {
-                reqBody = data.getStringExtra("reqBody");
-            }
-        }
-    }*/
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
     {
