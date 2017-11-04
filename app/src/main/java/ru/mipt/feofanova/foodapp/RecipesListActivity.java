@@ -22,6 +22,7 @@ public class RecipesListActivity extends AppCompatActivity
     private RecyclerView.Adapter mRecipesAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private final ArrayList<String> mDataSet = new ArrayList<>();
+    private final ArrayList<String> mUrlsSet = new ArrayList<>();
     //.Intent intent = new In
     private String reqBody;
 
@@ -38,23 +39,26 @@ public class RecipesListActivity extends AppCompatActivity
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
         reqBody = getIntent().getStringExtra("reqBody");
-        String[] tmp  = new String[reqBody.length()];
+        //String[] tmp  = new String[reqBody.length()];
         //tmp = reqBody.split("\"");
         //myDataset.addAll();
-        for(GsonRecArray i: new Gson().fromJson(reqBody, GsonRequestSampleRec.class).getResults())
+        for (GsonRecArray i : new Gson().fromJson(reqBody, GsonRequestSampleRec.class).getResults())
+        {
             mDataSet.add(i.getTitle());
-        //for(String s: tmp)
-            //mDataSet.add(s);
-        //myDataset.add(reqBody);
+            mUrlsSet.add(i.getThumbnail());
+        }
+
+
 
         //String[] mDataSet = getResources().getStringArray(R.array.number_strings);
-        mRecipesAdapter = new mAdapter(mDataSet);
+        mRecipesAdapter = new mAdapter(mDataSet, mUrlsSet);
         mRecyclerView.setAdapter(mRecipesAdapter);
     }
 
     public class mAdapter extends RecyclerView.Adapter<mAdapter.ViewHolder>
     {
         private ArrayList<String> mDataSet;
+        private ArrayList<String> mUrlsSet;
 
         class ViewHolder extends RecyclerView.ViewHolder
         {
@@ -71,9 +75,11 @@ public class RecipesListActivity extends AppCompatActivity
             }
         }
 
-        public mAdapter(ArrayList<String> inputDataDet)
+        public mAdapter(ArrayList<String> inputDataDet, ArrayList<String> urls)
         {
             mDataSet = inputDataDet;
+            mUrlsSet = urls;
+            //new ImageDownloaderTask((ImageView))
         }
 
         @Override
@@ -91,9 +97,12 @@ public class RecipesListActivity extends AppCompatActivity
         {
             holder.mTextView.setText(mDataSet.get(position));
             holder.mImageView.setImageResource(R.drawable.pic);
-            holder.mCardView.setOnClickListener(new View.OnClickListener() {
+            new ImageDownloaderTask(mUrlsSet.get(position), holder.mImageView).execute(); ///args
+            holder.mCardView.setOnClickListener(new View.OnClickListener()
+            {
                 @Override
-                public void onClick(View view) {
+                public void onClick(View view)
+                {
                     //Start 3rd activity
                     //holder.mTextView.setText("ouch!");
                 }
