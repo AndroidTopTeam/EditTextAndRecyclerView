@@ -4,22 +4,19 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 
 
-import com.google.gson.Gson;
-
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 
 public class IngredientsActivity extends AppCompatActivity implements HttpGetRequest.IResponseListener
@@ -27,13 +24,14 @@ public class IngredientsActivity extends AppCompatActivity implements HttpGetReq
     private static final String INGREDIENTS_KEY_ = "INGREDIENTS";
 
     private EditText mEditText;
-    private ListView mListView;
     private Button mFindButton;
     private String reqBody;
-    private MyAdapter mAdapter;
+    private IngredientsActivity.mAdapter mAdapter;
     private HttpGetRequest req;
-    //private ArrayList<String> ingreds;
     private final ArrayList<String> ingredients = new ArrayList<>();
+
+    private RecyclerView mRecyclerView;
+    private RecyclerView.LayoutManager mLayoutManager;
 
 
     @Override
@@ -45,13 +43,17 @@ public class IngredientsActivity extends AppCompatActivity implements HttpGetReq
         //req.delegate = this;
 
         mEditText = (EditText) findViewById(R.id.edit_text);
-        mListView = (ListView) findViewById(R.id.list_view);
         mFindButton = (Button) findViewById(R.id.find_button);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+
+        mLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(mLayoutManager);
 
 
-        mAdapter = new MyAdapter(this,
+        mAdapter = new mAdapter(this,
                 R.layout.ingredient_button, ingredients);
-        mListView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(mAdapter);
 
         mEditText.setOnKeyListener(new View.OnKeyListener()
         {
@@ -96,62 +98,58 @@ public class IngredientsActivity extends AppCompatActivity implements HttpGetReq
         startActivity(data);
     }
 
-    class MyAdapter extends ArrayAdapter<String>
+    class mAdapter extends RecyclerView.Adapter<mAdapter.ViewHolder>
     {
         private LayoutInflater inflater;
         private int layout;
-        private ArrayList<String> mList;
+        private ArrayList<String> mDataSet;
 
-        MyAdapter(Context context, int resource, ArrayList<String> list)
+        mAdapter(Context context, int resource, ArrayList<String> list)
         {
-            super(context, resource, list);
-            this.mList = list;
-            this.layout = resource;
-            this.inflater = LayoutInflater.from(context);
+            mDataSet = list;
+            layout = resource;
+            inflater = LayoutInflater.from(context);
         }
 
-        public View getView(final int position, View convertView, ViewGroup parent)
-        {
-
-            final ViewHolder viewHolder;
-            if (convertView == null)
-            {
-                convertView = inflater.inflate(this.layout, parent, false);
-                viewHolder = new ViewHolder(convertView);
-                convertView.setTag(viewHolder);
-            }
-            else
-            {
-                viewHolder = (ViewHolder) convertView.getTag();
-            }
-
-            final String str = mList.get(position);
-            viewHolder.name.setText(str);
-
-
-            final MyAdapter adapter = this;
-            viewHolder.button.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View v)
-                {
-                    mList.remove(position);
-                    adapter.notifyDataSetChanged();
-                }
-            });
-            return convertView;
-        }
-
-        private class ViewHolder
+        public class ViewHolder extends RecyclerView.ViewHolder
         {
             final Button button;
             final TextView name;
 
             ViewHolder(View view)
             {
+                super(view);
                 button = view.findViewById(R.id.ingredient_button);
                 name = view.findViewById(R.id.name);
             }
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
+        {
+            View view = inflater.inflate(layout, parent, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, final int position)
+        {
+            holder.name.setText(mDataSet.get(position));
+            final mAdapter adapter = this;
+            holder.button.setOnClickListener(new View.OnClickListener()
+            {
+                @Override
+                public void onClick(View v)
+                {
+                    mDataSet.remove(position);
+                    adapter.notifyDataSetChanged();
+                }
+            });
+        }
+
+        public int getItemCount()
+        {
+            return mDataSet.size();
         }
 
     }

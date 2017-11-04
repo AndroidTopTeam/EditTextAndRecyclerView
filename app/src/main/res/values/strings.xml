@@ -3,44 +3,4 @@
 
     <string name="ingredient_hint">enter ingredient</string>
     <string name="find_button">FIND</string>
-
-    <string-array name="number_strings">
-        <item>один</item>
-        <item>два</item>
-        <item>три</item>
-        <item>четыре</item>
-        <item>пять</item>
-        <item>шесть</item>
-        <item>семь</item>
-        <item>восемь</item>
-        <item>девять</item>
-        <item>десять</item>
-        <item>одиннадцать</item>
-        <item>двенадцать</item>
-        <item>тринадцать</item>
-        <item>четырнадцать</item>
-        <item>пятнадцать</item>
-        <item>шестнадцать</item>
-        <item>семнадцать</item>
-        <item>восемнадцать</item>
-        <item>девятнадцать</item>
-        <item>двадцать</item>
-        <item>тридцать</item>
-        <item>сорок</item>
-        <item>пятьдесят</item>
-        <item>шестьдесят</item>
-        <item>семьдесят</item>
-        <item>восемьдесят</item>
-        <item>девяносто</item>
-        <item>сто</item>
-        <item>двести</item>
-        <item>триста</item>
-        <item>четыреста</item>
-        <item>пятьсот</item>
-        <item>шестьсот</item>
-        <item>семьсот</item>
-        <item>восемьсот</item>
-        <item>девятьсот</item>
-        <item>тысяча</item>
-    </string-array>
 </resources>
