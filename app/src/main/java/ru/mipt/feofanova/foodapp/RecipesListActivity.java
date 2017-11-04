@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 
 public class RecipesListActivity extends AppCompatActivity
@@ -36,29 +38,18 @@ public class RecipesListActivity extends AppCompatActivity
         myRecyclerView.setLayoutManager(myLayoutManager);
         reqBody = getIntent().getStringExtra("reqBody");
         String[] tmp  = new String[reqBody.length()];
-        tmp = reqBody.split("\"");
-
-        for(String s: tmp)
-            myDataset.add(s);
-        myDataset.add(reqBody);
+        //tmp = reqBody.split("\"");
+        //myDataset.addAll();
+        for(GsonRecArray i: new Gson().fromJson(reqBody, GsonRequestSampleRec.class).getResults())
+            myDataset.add(i.getTitle());
+        //for(String s: tmp)
+            //myDataset.add(s);
+        //myDataset.add(reqBody);
 
         //String[] myDataset = getResources().getStringArray(R.array.number_strings);
         myAdapter = new MyAdapter(myDataset);
         myRecyclerView.setAdapter(myAdapter);
-
     }
-
-    /*@Override
-    protected void onActivityResult(int code, int result, Intent data)
-    {
-        if (result == RESULT_OK)
-        {
-            if (data.hasExtra("reqBody"))
-            {
-                reqBody = data.getStringExtra("reqBody");
-            }
-        }
-    }*/
 
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
     {

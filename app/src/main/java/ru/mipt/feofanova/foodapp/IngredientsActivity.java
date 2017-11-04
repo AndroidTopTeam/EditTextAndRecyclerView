@@ -16,18 +16,25 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 
-public class IngredientsActivity extends AppCompatActivity
+public class IngredientsActivity extends AppCompatActivity implements HttpGetRequest.IResponseListener
 {
+    private static final String INGREDIENTS_KEY_ = "INGREDIENTS";
+
     private EditText mEditText;
     private ListView mListView;
     private Button mFindButton;
     private String reqBody;
+    private MyAdapter mAdapter;
+    private HttpGetRequest req;
     //private ArrayList<String> ingreds;
     private final ArrayList<String> ingredients = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -35,13 +42,13 @@ public class IngredientsActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredients);
+        //req.delegate = this;
 
         mEditText = (EditText) findViewById(R.id.edit_text);
         mListView = (ListView) findViewById(R.id.list_view);
         mFindButton = (Button) findViewById(R.id.find_button);
 
 
-        final MyAdapter mAdapter;
         mAdapter = new MyAdapter(this,
                 R.layout.ingredient_button, ingredients);
         mListView.setAdapter(mAdapter);
@@ -69,32 +76,24 @@ public class IngredientsActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-
-                try
-                {
-                    RequestCreator creator = new RequestCreator(ingredients, null, null);
-                    HttpGetRequest req = new HttpGetRequest(creator.makeRequestString());
-                    req.execute();
-                    reqBody = req.get();
-                    Log.e("REQBODY", reqBody);
-                    Intent data = new Intent(IngredientsActivity.this, RecipesListActivity.class);
-                    data.putExtra("reqBody", reqBody);
-                    setResult(RESULT_OK, data);
-                    startActivity(data);
-                    IngredientsActivity.this.finish();
-                } /*catch (InterruptedException e)
-                {
-                    e.printStackTrace();
-                } catch (ExecutionException e)
-                {
-                    e.printStackTrace();
-                }*/
-                catch(Exception e)
-                {
-                    e.printStackTrace();
-                }
+                RequestCreator creator = new RequestCreator(ingredients, null, null);
+                req = new HttpGetRequest(creator.makeRequestString());
+                req.delegate = IngredientsActivity.this;
+                req.execute();
+                //IngredientsActivity.this.finish();
             }
         });
+    }
+
+    @Override
+    public void onResponse(String res)
+    {
+        reqBody = res;
+        Log.e("REQBODY", reqBody);
+        Intent data = new Intent(IngredientsActivity.this, RecipesListActivity.class);
+        data.putExtra("reqBody", reqBody);
+        setResult(RESULT_OK, data);
+        startActivity(data);
     }
 
     class MyAdapter extends ArrayAdapter<String>
@@ -155,6 +154,28 @@ public class IngredientsActivity extends AppCompatActivity
             }
         }
 
+    }
+
+    @Override
+    public void onResume()
+    {
+        super.onResume();
+
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+
+        outState.putStringArrayList(INGREDIENTS_KEY_, ingredients);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        ingredients.addAll(0, savedInstanceState.getStringArrayList(INGREDIENTS_KEY_));
     }
 
 }
