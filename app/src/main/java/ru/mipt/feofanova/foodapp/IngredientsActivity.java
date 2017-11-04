@@ -16,9 +16,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 
 
+public class IngredientsActivity extends AppCompatActivity implements HttpGetRequest.IResponseListener
 {
     private static final String INGREDIENTS_KEY_ = "INGREDIENTS";
 
@@ -30,6 +33,8 @@ import java.util.ArrayList;
 <<<<<<< HEAD
     private RecyclerView.LayoutManager mLayoutManager;
 =======
+    private HttpGetRequest req;
+    //private ArrayList<String> ingreds;
 >>>>>>> talgat
     private final ArrayList<String> ingredients = new ArrayList<>();
 
@@ -40,6 +45,7 @@ import java.util.ArrayList;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredients);
+        //req.delegate = this;
 
         mEditText = (EditText) findViewById(R.id.edit_text);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -103,6 +109,11 @@ import java.util.ArrayList;
                     e.printStackTrace();
                 }
 =======
+                RequestCreator creator = new RequestCreator(ingredients, null, null);
+                req = new HttpGetRequest(creator.makeRequestString());
+                req.delegate = IngredientsActivity.this;
+                req.execute();
+                //IngredientsActivity.this.finish();
 >>>>>>> talgat
             }
         });
@@ -111,6 +122,18 @@ import java.util.ArrayList;
 <<<<<<< HEAD
     public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder>
 =======
+    @Override
+    public void onResponse(String res)
+    {
+        reqBody = res;
+        Log.e("REQBODY", reqBody);
+        Intent data = new Intent(IngredientsActivity.this, RecipesListActivity.class);
+        data.putExtra("reqBody", reqBody);
+        setResult(RESULT_OK, data);
+        startActivity(data);
+    }
+
+    class MyAdapter extends ArrayAdapter<String>
 >>>>>>> talgat
     {
         private LayoutInflater inflater;

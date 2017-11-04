@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 
 public class RecipesListActivity extends AppCompatActivity
@@ -45,6 +47,17 @@ public class RecipesListActivity extends AppCompatActivity
         mRecyclerView.setAdapter(mAdapter);
 
 =======
+        //tmp = reqBody.split("\"");
+        //myDataset.addAll();
+        for(GsonRecArray i: new Gson().fromJson(reqBody, GsonRequestSampleRec.class).getResults())
+            myDataset.add(i.getTitle());
+        //for(String s: tmp)
+            //myDataset.add(s);
+        //myDataset.add(reqBody);
+
+        //String[] myDataset = getResources().getStringArray(R.array.number_strings);
+        myAdapter = new MyAdapter(myDataset);
+        myRecyclerView.setAdapter(myAdapter);
 >>>>>>> talgat
     }
 
