@@ -1,5 +1,7 @@
 package ru.mipt.feofanova.foodapp;
+
 import android.os.AsyncTask;
+import android.view.View;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -19,9 +21,17 @@ public class HttpGetRequest extends AsyncTask<Void, Void, String>
     private final Request request;
     private String responseBody;
 
+    public interface IResponseListener
+    {
+        void onResponse(String data);
+    }
+
+    public IResponseListener delegate = null;
+
     public HttpGetRequest(String url)
     {
         reqUrl = url;
+        //this.delegate =  delegate;
 
         /*client = new OkHttpClient.Builder()
                 .connectTimeout(20, TimeUnit.SECONDS)
@@ -33,9 +43,6 @@ public class HttpGetRequest extends AsyncTask<Void, Void, String>
         request = new Request.Builder()
                 .url(reqUrl)
                 .build();
-
-
-
     }
 
     @Override
@@ -47,7 +54,6 @@ public class HttpGetRequest extends AsyncTask<Void, Void, String>
         {
             response = client.newCall(request).execute();
             responseBody = response.body().string();
-
         } catch (IOException e)
         {
             e.printStackTrace();
@@ -60,6 +66,7 @@ public class HttpGetRequest extends AsyncTask<Void, Void, String>
     protected void onPostExecute(String res)
     {
         super.onPostExecute(res);
+        delegate.onResponse(res);
     }
 
 
