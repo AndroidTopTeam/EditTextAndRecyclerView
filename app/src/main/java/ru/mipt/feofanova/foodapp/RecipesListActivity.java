@@ -1,5 +1,7 @@
 package ru.mipt.feofanova.foodapp;
 
+import android.graphics.Bitmap;
+import android.support.v4.util.LruCache;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,7 +25,7 @@ public class RecipesListActivity extends AppCompatActivity
     private RecyclerView.LayoutManager mLayoutManager;
     private final ArrayList<String> mDataSet = new ArrayList<>();
     private final ArrayList<String> mUrlsSet = new ArrayList<>();
-    //.Intent intent = new In
+    private LruCache<String, Bitmap> mMemoryCache;
     private String reqBody;
 
     @Override
@@ -31,6 +33,18 @@ public class RecipesListActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipes_list);
+
+        if (mMemoryCache == null) {
+            final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+            final int cacheSize = maxMemory / 8;
+
+            mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+                @Override
+                protected int sizeOf(String key, Bitmap bitmap) {
+                    return bitmap.getByteCount() / 1024;
+                }
+            };
+        }
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
@@ -96,8 +110,9 @@ public class RecipesListActivity extends AppCompatActivity
         public void onBindViewHolder(final ViewHolder holder, int position)
         {
             holder.mTextView.setText(mDataSet.get(position));
-            holder.mImageView.setImageResource(R.drawable.pic);
-            new ImageDownloaderTask(mUrlsSet.get(position), holder.mImageView).execute(); ///args
+            String url = mUrlsSet.get(position);
+            holder.mImageView.setImageResource(R.drawable.pic); //заглушка
+            new ImageDownloaderTask(url, holder.mImageView, mMemoryCache).execute(); ///args
             holder.mCardView.setOnClickListener(new View.OnClickListener()
             {
                 @Override
