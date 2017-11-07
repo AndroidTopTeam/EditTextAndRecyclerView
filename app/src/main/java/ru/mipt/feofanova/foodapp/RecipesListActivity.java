@@ -1,5 +1,6 @@
 package ru.mipt.feofanova.foodapp;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
 import android.support.v7.app.AppCompatActivity;
@@ -111,14 +112,17 @@ public class RecipesListActivity extends AppCompatActivity
         {
             holder.mTextView.setText(mDataSet.get(position));
             String url = mUrlsSet.get(position);
-            holder.mImageView.setImageResource(R.drawable.pic); //заглушка
+            holder.mImageView.setImageResource(R.drawable.placeholder); //заглушка
             new ImageDownloaderTask(url, holder.mImageView, mMemoryCache).execute(); ///args
             holder.mCardView.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View view)
                 {
-                    //Start 3rd activity
+                    //3-е активити
+                    //Передать сюда нужные данные
+                    Intent data = new Intent(RecipesListActivity.this, MenuActivity.class);
+                    startActivity(data);
                     //holder.mTextView.setText("ouch!");
                 }
             });
