@@ -11,7 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 public class ZeroActivity extends AppCompatActivity {
 
     static final String KEY_TIMER_VALUE_ = "TIMER";
-    long milliSeconds = 5000;
+    long milliSeconds = 3000;
 
     static CountDownTimer timer;
 

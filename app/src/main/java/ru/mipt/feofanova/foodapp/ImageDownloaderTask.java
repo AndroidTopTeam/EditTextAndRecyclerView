@@ -21,16 +21,6 @@ public class ImageDownloaderTask extends AsyncTask<Void, Void, Bitmap>
     private String url;
     private LruCache<String, Bitmap> mMemoryCache;
 
-    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
-        if (getBitmapFromMemoryCache(key) == null) {
-            mMemoryCache.put(key, bitmap);
-        }
-    }
-
-    public Bitmap getBitmapFromMemoryCache(String key) {
-        return mMemoryCache.get(key);
-    }
-
     public ImageDownloaderTask(String exUrl, ImageView img, LruCache<String, Bitmap> memCache)
     {
         url = exUrl;
@@ -38,30 +28,56 @@ public class ImageDownloaderTask extends AsyncTask<Void, Void, Bitmap>
         mMemoryCache = memCache;
     }
 
+    public ImageDownloaderTask(String exUrl, ImageView img)
+    {
+        url = exUrl;
+        bmImage = img;
+        mMemoryCache = null;
+    }
+
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap)
+    {
+        if (getBitmapFromMemoryCache(key) == null)
+        {
+            mMemoryCache.put(key, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromMemoryCache(String key)
+    {
+        return mMemoryCache.get(key);
+    }
+
+
     @Override
     protected Bitmap doInBackground(Void... voids)
     {
         Bitmap mIcon = null;
-        mIcon = getBitmapFromMemoryCache(url);
-        if (mIcon != null) {
-            return mIcon;
+        if (mMemoryCache != null)
+        {
+            mIcon = getBitmapFromMemoryCache(url);
+            if (mIcon != null)
+            {
+                return mIcon;
+            }
         }
         try
         {
             InputStream in = new java.net.URL(url).openStream();
             mIcon = BitmapFactory.decodeStream(in);
-        }
-        catch (MalformedURLException e)
+        } catch (MalformedURLException e)
+        {
+            Log.e("Error with img download", e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e)
         {
             Log.e("Error with img download", e.getMessage());
             e.printStackTrace();
         }
-        catch (IOException e)
+        if (mMemoryCache != null)
         {
-            Log.e("Error with img download", e.getMessage());
-            e.printStackTrace();
+            addBitmapToMemoryCache(url, mIcon);
         }
-        addBitmapToMemoryCache(url, mIcon);
         return mIcon;
     }
 

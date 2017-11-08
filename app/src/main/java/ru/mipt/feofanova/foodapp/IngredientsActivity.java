@@ -91,7 +91,7 @@ public class IngredientsActivity extends AppCompatActivity implements HttpGetReq
     public void onResponse(String res)
     {
         reqBody = res;
-        Log.e("REQBODY", reqBody);
+        //Log.e("REQBODY", reqBody);
         Intent data = new Intent(IngredientsActivity.this, RecipesListActivity.class);
         data.putExtra("reqBody", reqBody);
         setResult(RESULT_OK, data);

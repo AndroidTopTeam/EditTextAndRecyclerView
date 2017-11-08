@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class RecipesListActivity extends AppCompatActivity
 {
@@ -28,6 +29,7 @@ public class RecipesListActivity extends AppCompatActivity
     private final ArrayList<String> mUrlsSet = new ArrayList<>();
     private LruCache<String, Bitmap> mMemoryCache;
     private String reqBody;
+    private List<GsonRecArray> parsedJson;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -35,13 +37,18 @@ public class RecipesListActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipes_list);
 
-        if (mMemoryCache == null) {
+        // parsedJson = new List<>();
+
+        if (mMemoryCache == null)
+        {
             final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
             final int cacheSize = maxMemory / 8;
 
-            mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            mMemoryCache = new LruCache<String, Bitmap>(cacheSize)
+            {
                 @Override
-                protected int sizeOf(String key, Bitmap bitmap) {
+                protected int sizeOf(String key, Bitmap bitmap)
+                {
                     return bitmap.getByteCount() / 1024;
                 }
             };
@@ -53,16 +60,16 @@ public class RecipesListActivity extends AppCompatActivity
 
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+
         reqBody = getIntent().getStringExtra("reqBody");
-        //String[] tmp  = new String[reqBody.length()];
-        //tmp = reqBody.split("\"");
-        //myDataset.addAll();
-        for (GsonRecArray i : new Gson().fromJson(reqBody, GsonRequestSampleRec.class).getResults())
+
+        parsedJson = new Gson().fromJson(reqBody, GsonRequestSampleRec.class).getResults();
+
+        for (GsonRecArray i : parsedJson)
         {
             mDataSet.add(i.getTitle());
             mUrlsSet.add(i.getThumbnail());
         }
-
 
 
         //String[] mDataSet = getResources().getStringArray(R.array.number_strings);
@@ -75,6 +82,7 @@ public class RecipesListActivity extends AppCompatActivity
         private ArrayList<String> mDataSet;
         private ArrayList<String> mUrlsSet;
 
+        //public int position;
         class ViewHolder extends RecyclerView.ViewHolder
         {
             CardView mCardView;
@@ -107,13 +115,16 @@ public class RecipesListActivity extends AppCompatActivity
             return new ViewHolder(view);
         }
 
+        public int pos;
+
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position)
+        public void onBindViewHolder(final ViewHolder holder, final int position)
         {
             holder.mTextView.setText(mDataSet.get(position));
             String url = mUrlsSet.get(position);
             holder.mImageView.setImageResource(R.drawable.placeholder); //заглушка
             new ImageDownloaderTask(url, holder.mImageView, mMemoryCache).execute(); ///args
+            pos = position;
             holder.mCardView.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -122,10 +133,18 @@ public class RecipesListActivity extends AppCompatActivity
                     //3-е активити
                     //Передать сюда нужные данные
                     Intent data = new Intent(RecipesListActivity.this, MenuActivity.class);
+
+                    //Singleton.parsedJsonResp = parsedJson;
+                    Singleton.setParsedJsonResp(parsedJson);
+                    data.putExtra("currentMealIndex", position);
+                    setResult(RESULT_OK, data);
                     startActivity(data);
+
                     //holder.mTextView.setText("ouch!");
                 }
             });
+
+
         }
 
         public int getItemCount()
