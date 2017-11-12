@@ -11,11 +11,13 @@ import android.support.v7.widget.CardView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,9 +29,12 @@ public class RecipesListActivity extends AppCompatActivity
     private RecyclerView.LayoutManager mLayoutManager;
     private final ArrayList<String> mDataSet = new ArrayList<>();
     private final ArrayList<String> mUrlsSet = new ArrayList<>();
-    private LruCache<String, Bitmap> mMemoryCache;
+    //private LruCache<String, Bitmap> mMemoryCache;
     private String reqBody;
     private List<GsonRecArray> parsedJson;
+    private Button prev;
+    private Button next;
+    private final String filename = "recipefile";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -38,21 +43,6 @@ public class RecipesListActivity extends AppCompatActivity
         setContentView(R.layout.activity_recipes_list);
 
         // parsedJson = new List<>();
-
-        if (mMemoryCache == null)
-        {
-            final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-            final int cacheSize = maxMemory / 8;
-
-            mMemoryCache = new LruCache<String, Bitmap>(cacheSize)
-            {
-                @Override
-                protected int sizeOf(String key, Bitmap bitmap)
-                {
-                    return bitmap.getByteCount() / 1024;
-                }
-            };
-        }
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
@@ -75,6 +65,25 @@ public class RecipesListActivity extends AppCompatActivity
         //String[] mDataSet = getResources().getStringArray(R.array.number_strings);
         mRecipesAdapter = new mAdapter(mDataSet, mUrlsSet);
         mRecyclerView.setAdapter(mRecipesAdapter);
+
+        prev = (Button) findViewById(R.id.prev_button);
+        next = (Button) findViewById(R.id.next_button);
+        prev.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //clear mDataSet
+                //add to mDataSet and mUrlsSet new items
+            }
+        });
+
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //clear mDataSet
+                //add to mDataSet and mUrlsSet new items
+            }
+        });
+
     }
 
     public class mAdapter extends RecyclerView.Adapter<mAdapter.ViewHolder>
@@ -123,7 +132,7 @@ public class RecipesListActivity extends AppCompatActivity
             holder.mTextView.setText(mDataSet.get(position));
             String url = mUrlsSet.get(position);
             holder.mImageView.setImageResource(R.drawable.placeholder); //заглушка
-            new ImageDownloaderTask(url, holder.mImageView, mMemoryCache).execute(); ///args
+            new ImageDownloaderTask(url, holder.mImageView).execute(); ///args
             pos = position;
             holder.mCardView.setOnClickListener(new View.OnClickListener()
             {

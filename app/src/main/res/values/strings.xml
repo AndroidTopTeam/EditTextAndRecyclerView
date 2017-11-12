@@ -5,6 +5,8 @@
     <string name="find_button">FIND!</string>
     <string name="ingredient">Ingredients:</string>
     <string name="recipe">Recipe:</string>
+    <string name="prev">Prev</string>
+    <string name="next">Next</string>
 
 </resources>
 

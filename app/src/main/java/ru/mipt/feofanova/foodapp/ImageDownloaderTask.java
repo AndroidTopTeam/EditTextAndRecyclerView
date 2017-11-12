@@ -19,33 +19,24 @@ public class ImageDownloaderTask extends AsyncTask<Void, Void, Bitmap>
 {
     private ImageView bmImage;
     private String url;
-    private LruCache<String, Bitmap> mMemoryCache;
-
-    public ImageDownloaderTask(String exUrl, ImageView img, LruCache<String, Bitmap> memCache)
-    {
-        url = exUrl;
-        bmImage = img;
-        mMemoryCache = memCache;
-    }
 
     public ImageDownloaderTask(String exUrl, ImageView img)
     {
         url = exUrl;
         bmImage = img;
-        mMemoryCache = null;
     }
 
     public void addBitmapToMemoryCache(String key, Bitmap bitmap)
     {
         if (getBitmapFromMemoryCache(key) == null)
         {
-            mMemoryCache.put(key, bitmap);
+            BitmapLru.mMemoryCache.put(key, bitmap);
         }
     }
 
     public Bitmap getBitmapFromMemoryCache(String key)
     {
-        return mMemoryCache.get(key);
+        return BitmapLru.mMemoryCache.get(key);
     }
 
 
@@ -53,7 +44,7 @@ public class ImageDownloaderTask extends AsyncTask<Void, Void, Bitmap>
     protected Bitmap doInBackground(Void... voids)
     {
         Bitmap mIcon = null;
-        if (mMemoryCache != null)
+        if (BitmapLru.mMemoryCache != null)
         {
             mIcon = getBitmapFromMemoryCache(url);
             if (mIcon != null)
@@ -74,7 +65,7 @@ public class ImageDownloaderTask extends AsyncTask<Void, Void, Bitmap>
             Log.e("Error with img download", e.getMessage());
             e.printStackTrace();
         }
-        if (mMemoryCache != null)
+        if (BitmapLru.mMemoryCache != null)
         {
             addBitmapToMemoryCache(url, mIcon);
         }
