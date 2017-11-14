@@ -7,9 +7,23 @@
     <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
     <item name="colorAccent">@color/colorAccent</item>
     <item name="android:windowBackground">@color/beije</item>
+    <item name="android:navigationBarColor">@color/colorAccent</item>
     <item name="android:colorBackground">@color/beije</item>
     <item name="android:textColor">@color/grey</item>
     <item name="android:textSize">15sp</item>
 </style>
+
+<style name="AppThemeNight" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!-- Customize your theme here. -->
+    <item name="colorPrimary">@color/colorPrimaryN</item>
+    <item name="colorPrimaryDark">@color/colorPrimaryDarkN</item>
+    <item name="colorAccent">@color/colorAccentN</item>
+    <item name="android:windowBackground">@color/beijeN</item>
+    <item name="android:navigationBarColor">@color/colorAccentN</item>
+    <item name="android:colorBackground">@color/beijeN</item>
+    <item name="android:textColor">@color/greyN</item>
+    <item name="android:textSize">15sp</item>
+</style>
+
 
 </resources>
