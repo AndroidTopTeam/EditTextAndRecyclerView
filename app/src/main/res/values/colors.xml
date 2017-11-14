@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<color name="colorPrimary">#9ACD32</color>
+<color name="colorPrimary">#BCEB64</color>
 <color name="colorPrimaryDark">#6B8E23</color>
 <color name="colorAccent">#6B8E23</color>
 <color name="beije">#FFFACD</color>
 <color name="grey">#696969</color>
+
+    <color name="colorPrimaryN">#282849</color>
+    <color name="colorPrimaryDarkN">#000005</color>
+    <color name="colorAccentN">#000005</color>
+    <color name="beijeN">#6F6F9B</color>
+    <color name="greyN">#FFFACD</color>
+
 </resources>
