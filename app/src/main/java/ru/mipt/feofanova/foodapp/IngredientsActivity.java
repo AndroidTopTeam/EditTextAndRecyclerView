@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 
+import com.rey.material.widget.ProgressView;
+
 import java.util.ArrayList;
 
 
@@ -29,6 +31,7 @@ public class IngredientsActivity extends AppCompatActivity implements HttpGetReq
     private IngredientsActivity.mAdapter mAdapter;
     private HttpGetRequest req;
     private final ArrayList<String> ingredients = new ArrayList<>();
+    private ProgressView mProgressView;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -45,6 +48,7 @@ public class IngredientsActivity extends AppCompatActivity implements HttpGetReq
         mEditText = (EditText) findViewById(R.id.edit_text);
         mFindButton = (Button) findViewById(R.id.find_button);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mProgressView = (ProgressView) findViewById(R.id.progress);
         mRecyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(this);
@@ -79,10 +83,9 @@ public class IngredientsActivity extends AppCompatActivity implements HttpGetReq
             public void onClick(View v)
             {
                 RequestCreator creator = new RequestCreator(ingredients, null, null);
-                req = new HttpGetRequest(creator.makeRequestString());
+                req = new HttpGetRequest(creator.makeRequestString(), mProgressView, (ViewGroup)findViewById(R.id.rel));
                 req.delegate = IngredientsActivity.this;
                 req.execute();
-                //IngredientsActivity.this.finish();
             }
         });
     }
@@ -174,6 +177,17 @@ public class IngredientsActivity extends AppCompatActivity implements HttpGetReq
     public void onRestoreInstanceState(Bundle savedInstanceState)
     {
         ingredients.addAll(0, savedInstanceState.getStringArrayList(INGREDIENTS_KEY_));
+    }
+
+    public static void enableDisableViewGroup(ViewGroup viewGroup, boolean enabled) {
+        int childCount = viewGroup.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            View view = viewGroup.getChildAt(i);
+            view.setEnabled(enabled);
+            if (view instanceof ViewGroup) {
+                enableDisableViewGroup((ViewGroup) view, enabled);
+            }
+        }
     }
 
 }

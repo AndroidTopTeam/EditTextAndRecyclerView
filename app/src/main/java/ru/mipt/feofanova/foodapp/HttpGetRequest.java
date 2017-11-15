@@ -2,6 +2,9 @@ package ru.mipt.feofanova.foodapp;
 
 import android.os.AsyncTask;
 import android.view.View;
+import android.view.ViewGroup;
+
+import com.rey.material.widget.ProgressView;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -9,6 +12,8 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+
+import static ru.mipt.feofanova.foodapp.IngredientsActivity.enableDisableViewGroup;
 
 /**
  * Created by Талгат on 25.10.2017.
@@ -20,6 +25,8 @@ public class HttpGetRequest extends AsyncTask<Void, Void, String>
     private OkHttpClient client;
     private final Request request;
     private String responseBody;
+    private ProgressView mProgressView;
+    private ViewGroup mViewGroup;
 
     public interface IResponseListener
     {
@@ -28,8 +35,14 @@ public class HttpGetRequest extends AsyncTask<Void, Void, String>
 
     public IResponseListener delegate = null;
 
-    public HttpGetRequest(String url)
+    public HttpGetRequest(String url, ProgressView progressView, ViewGroup viewGroup)
     {
+        mProgressView = progressView;
+        mViewGroup = viewGroup;
+
+        mProgressView.setVisibility(View.VISIBLE);
+        enableDisableViewGroup(viewGroup, false);
+
         reqUrl = url;
         //this.delegate =  delegate;
 
@@ -66,6 +79,8 @@ public class HttpGetRequest extends AsyncTask<Void, Void, String>
     protected void onPostExecute(String res)
     {
         super.onPostExecute(res);
+        mProgressView.setVisibility(View.INVISIBLE);
+        enableDisableViewGroup(mViewGroup, true);
         delegate.onResponse(res);
     }
 
