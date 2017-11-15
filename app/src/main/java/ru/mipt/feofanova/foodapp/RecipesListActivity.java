@@ -73,6 +73,9 @@ public class RecipesListActivity extends AppCompatActivity
             public void onClick(View view) {
                 //clear mDataSet
                 //add to mDataSet and mUrlsSet new items
+                mDataSet.clear();
+                mUrlsSet.clear();
+                //RequestCreator creator = new RequestCreator();
             }
         });
 
