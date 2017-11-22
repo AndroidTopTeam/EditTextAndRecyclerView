@@ -47,6 +47,8 @@ public class MenuActivity extends AppCompatActivity
         mRecipeDescriptionTextView.setTextColor(Color.BLUE);
         mRecipeDescriptionTextView.setHighlightColor(Color.BLUE);
         new ImageDownloaderTask(currentMeal.getThumbnail(), mMealPhoto).execute();
+
+
         mRecipeDescriptionTextView.setOnClickListener(new View.OnClickListener()
         {
             @Override

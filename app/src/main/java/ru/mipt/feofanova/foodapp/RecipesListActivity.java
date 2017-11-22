@@ -2,6 +2,7 @@ package ru.mipt.feofanova.foodapp;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.util.LruCache;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +21,8 @@ import com.google.gson.Gson;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class RecipesListActivity extends AppCompatActivity
 {
@@ -75,6 +78,14 @@ public class RecipesListActivity extends AppCompatActivity
                 //add to mDataSet and mUrlsSet new items
                 mDataSet.clear();
                 mUrlsSet.clear();
+                //mRecyclerView.updateViewLayout(view);
+                //  mRecyclerView.invalidate();
+
+                //RequestCreator creator = new RequestCreator(parsedJson.get(0).getIngredients(), null, new ArrayList<String>().add("2"));
+                //String url = creator.makeRequestString();
+                //HttpGetRequest req = new HttpGetRequest();
+
+                mRecipesAdapter.notifyDataSetChanged();
                 //RequestCreator creator = new RequestCreator();
             }
         });
@@ -84,6 +95,16 @@ public class RecipesListActivity extends AppCompatActivity
             public void onClick(View view) {
                 //clear mDataSet
                 //add to mDataSet and mUrlsSet new items
+                mDataSet.clear();
+                mUrlsSet.clear();
+                //mRecyclerView.updateViewLayout(view);
+                //  mRecyclerView.invalidate();
+
+                //RequestCreator creator = new RequestCreator(parsedJson.get(0).getIngredients(), null, new ArrayList<String>().add("2"));
+                //String url = creator.makeRequestString();
+                //HttpGetRequest req = new HttpGetRequest();
+
+                mRecipesAdapter.notifyDataSetChanged();
             }
         });
 
@@ -137,6 +158,7 @@ public class RecipesListActivity extends AppCompatActivity
             holder.mImageView.setImageResource(R.drawable.placeholder); //заглушка
             new ImageDownloaderTask(url, holder.mImageView).execute(); ///args
             pos = position;
+
             holder.mCardView.setOnClickListener(new View.OnClickListener()
             {
                 @Override

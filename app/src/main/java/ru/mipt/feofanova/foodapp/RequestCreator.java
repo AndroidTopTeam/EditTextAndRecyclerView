@@ -27,25 +27,31 @@ public class RequestCreator
         normalSearchQuery = new ArrayList<>();
 
         page = new ArrayList<>();
-
+        page = _page;
     }
 
 
     public String makeRequestString()
     {
         String req = BASESOURCE;
-        req+="?";
+        req += "?";
 
         boolean hasIngr = false, hasQuery = false, hasPage = false;
 
-        if(ingredients.size()>0)
+        if (ingredients.size() > 0)
         {
-            req+="i=";
-            for(int i=0;i<ingredients.size()-1;++i)
-                req+=ingredients.get(i) + ",";
-            req += ingredients.get(ingredients.size()-1);
+            req += "i=";
+            for (int i = 0; i < ingredients.size() - 1; ++i)
+                req += ingredients.get(i) + ",";
+            req += ingredients.get(ingredients.size() - 1);
             hasIngr = true;
         }
+        /*if (page.size() > 0)
+        {
+            req += "&";
+            req += "p=";
+            req += page.get(0);
+        }*/
         /*if(normalSearchQuery.size()>0)
         {
             if (hasIngr)
