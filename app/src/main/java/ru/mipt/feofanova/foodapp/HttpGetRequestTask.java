@@ -66,9 +66,10 @@ public class HttpGetRequestTask extends AsyncTask<Void, Void, String>
         {
             response = client.newCall(request).execute();
             responseBody = response.body().string();
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
-            e.printStackTrace();
+            return "404";
         }
 
         return responseBody;
