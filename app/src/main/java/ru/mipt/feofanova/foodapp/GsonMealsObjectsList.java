@@ -8,7 +8,7 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class GsonRequestSampleRec
+public class GsonMealsObjectsList
 {
     @SerializedName("title")
     @Expose
@@ -21,7 +21,7 @@ public class GsonRequestSampleRec
     private String href;
     @SerializedName("results")
     @Expose
-    private List<GsonRecArray> results = null;
+    private List<GsonMealObject> results = null;
 
     public String getTitle()
     {
@@ -53,12 +53,12 @@ public class GsonRequestSampleRec
         this.href = href;
     }
 
-    public List<GsonRecArray> getResults()
+    public List<GsonMealObject> getResults()
     {
         return results;
     }
 
-    public void setResults(List<GsonRecArray> results)
+    public void setResults(List<GsonMealObject> results)
     {
         this.results = results;
     }

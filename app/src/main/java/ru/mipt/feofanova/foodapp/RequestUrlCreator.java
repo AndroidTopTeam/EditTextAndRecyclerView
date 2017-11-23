@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 
-public class RequestCreator
+public class RequestUrlCreator
 {
     private ArrayList<String> ingredients;
     private ArrayList<String> normalSearchQuery;
@@ -20,7 +20,7 @@ public class RequestCreator
     private static final String BASESOURCE = "http://www.recipepuppy.com/api/";
 
 
-    public RequestCreator(ArrayList<String> ingr, ArrayList<String> query, ArrayList<String> _page)
+    public RequestUrlCreator(ArrayList<String> ingr, ArrayList<String> query, ArrayList<String> _page)
     {
         ingredients = new ArrayList<>();
         ingredients = ingr;

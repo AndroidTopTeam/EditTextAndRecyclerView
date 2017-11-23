@@ -7,19 +7,18 @@ import android.view.ViewGroup;
 import com.rey.material.widget.ProgressView;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static ru.mipt.feofanova.foodapp.IngredientsActivity.enableDisableViewGroup;
+import static ru.mipt.feofanova.foodapp.IngredientsInputActivity.enableDisableViewGroup;
 
 /**
  * Created by Талгат on 25.10.2017.
  */
 
-public class HttpGetRequest extends AsyncTask<Void, Void, String>
+public class HttpGetRequestTask extends AsyncTask<Void, Void, String>
 {
     private String reqUrl;
     private OkHttpClient client;
@@ -35,7 +34,7 @@ public class HttpGetRequest extends AsyncTask<Void, Void, String>
 
     public IResponseListener delegate = null;
 
-    public HttpGetRequest(String url, ProgressView progressView, ViewGroup viewGroup)
+    public HttpGetRequestTask(String url, ProgressView progressView, ViewGroup viewGroup)
     {
         mProgressView = progressView;
         mViewGroup = viewGroup;

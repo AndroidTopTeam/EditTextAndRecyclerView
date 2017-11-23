@@ -7,7 +7,7 @@ package ru.mipt.feofanova.foodapp;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class GsonRecArray
+public class GsonMealObject
 {
     @SerializedName("title")
     @Expose

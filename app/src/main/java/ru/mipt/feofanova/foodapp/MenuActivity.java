@@ -1,19 +1,16 @@
 package ru.mipt.feofanova.foodapp;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-public class MenuActivity extends AppCompatActivity
+public class MenuActivity extends AppCompatActivity implements ImageDownloaderTask.IImageResponseListener
 {
     TextView mTitleTextView;
     ImageView mMealPhoto;
@@ -21,7 +18,15 @@ public class MenuActivity extends AppCompatActivity
     TextView mIngredientsList;
     TextView mRecipeTextView;
     TextView mRecipeDescriptionTextView;
-    GsonRecArray currentMeal;
+    GsonMealObject currentMeal;
+    private ImageDownloaderTask imgResponseTask;
+
+    @Override
+    public void onResponse(Bitmap img, ImageView currentImage)
+    {
+        //currentImage.setImageBitmap(img);
+        currentImage.setImageBitmap(img);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,8 +51,10 @@ public class MenuActivity extends AppCompatActivity
         mRecipeDescriptionTextView.setText(currentMeal.getHref());
         mRecipeDescriptionTextView.setTextColor(Color.BLUE);
         mRecipeDescriptionTextView.setHighlightColor(Color.BLUE);
-        new ImageDownloaderTask(currentMeal.getThumbnail(), mMealPhoto).execute();
 
+        imgResponseTask = new ImageDownloaderTask(currentMeal.getThumbnail(), mMealPhoto);
+        imgResponseTask.delegate = MenuActivity.this;
+        imgResponseTask.execute();
 
         mRecipeDescriptionTextView.setOnClickListener(new View.OnClickListener()
         {

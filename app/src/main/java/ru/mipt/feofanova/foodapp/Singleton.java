@@ -9,18 +9,18 @@ import java.util.List;
 public class Singleton
 {
     private static Singleton instance;
-    private static List<GsonRecArray> parsedJsonResp;
+    private static List<GsonMealObject> parsedJsonResp;
 
     private Singleton(){}
 
 
-    public static void setParsedJsonResp(List<GsonRecArray> parsedJsonResp)
+    public static void setParsedJsonResp(List<GsonMealObject> parsedJsonResp)
     {
         Singleton.parsedJsonResp = parsedJsonResp;
     }
 
 
-    public static List<GsonRecArray> getParsedJsonResp()
+    public static List<GsonMealObject> getParsedJsonResp()
     {
         return parsedJsonResp;
     }
