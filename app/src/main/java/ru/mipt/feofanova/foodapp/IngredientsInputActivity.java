@@ -34,7 +34,7 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
 
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
-
+    private String basicUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -43,7 +43,7 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredients);
         //req.delegate = this;
-
+        basicUrl = "";
         mEditText = (EditText) findViewById(R.id.edit_text);
         mFindButton = (Button) findViewById(R.id.find_button);
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
@@ -81,8 +81,12 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
             @Override
             public void onClick(View v)
             {
-                RequestUrlCreator creator = new RequestUrlCreator(ingredients, null, null);
-                req = new HttpGetRequestTask(creator.makeRequestString(), mProgressView, (ViewGroup)findViewById(R.id.rel));
+                RequestUrlCreator creator = new RequestUrlCreator(ingredients);
+                req = new HttpGetRequestTask(
+                        (basicUrl = creator.makeRequestString()),
+                        mProgressView,
+                        (ViewGroup) findViewById(R.id.rel));
+
                 req.delegate = IngredientsInputActivity.this;
                 req.execute();
             }
@@ -96,6 +100,7 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
         //Log.e("REQBODY", reqBody);
         Intent data = new Intent(IngredientsInputActivity.this, MealsListActivity.class);
         data.putExtra("reqBody", reqBody);
+        data.putExtra("basicUrl", basicUrl);
         setResult(RESULT_OK, data);
         startActivity(data);
     }
@@ -178,12 +183,15 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
         ingredients.addAll(0, savedInstanceState.getStringArrayList(INGREDIENTS_KEY_));
     }
 
-    public static void enableDisableViewGroup(ViewGroup viewGroup, boolean enabled) {
+    public static void enableDisableViewGroup(ViewGroup viewGroup, boolean enabled)
+    {
         int childCount = viewGroup.getChildCount();
-        for (int i = 0; i < childCount; i++) {
+        for (int i = 0; i < childCount; i++)
+        {
             View view = viewGroup.getChildAt(i);
             view.setEnabled(enabled);
-            if (view instanceof ViewGroup) {
+            if (view instanceof ViewGroup)
+            {
                 enableDisableViewGroup((ViewGroup) view, enabled);
             }
         }
