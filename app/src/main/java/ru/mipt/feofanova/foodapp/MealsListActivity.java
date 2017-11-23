@@ -2,8 +2,6 @@ package ru.mipt.feofanova.foodapp;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.support.design.widget.AppBarLayout;
-import android.support.v4.util.LruCache;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,13 +16,10 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
-
-public class RecipesListActivity extends AppCompatActivity
+public class MealsListActivity extends AppCompatActivity implements ImageDownloaderTask.IImageResponseListener
 {
 
     private RecyclerView mRecyclerView;
@@ -34,10 +29,12 @@ public class RecipesListActivity extends AppCompatActivity
     private final ArrayList<String> mUrlsSet = new ArrayList<>();
     //private LruCache<String, Bitmap> mMemoryCache;
     private String reqBody;
-    private List<GsonRecArray> parsedJson;
+    private List<GsonMealObject> parsedJson;
     private Button prev;
     private Button next;
     private final String filename = "recipefile";
+    private ImageDownloaderTask imgResponseTask;
+    private ImageView mImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -56,9 +53,9 @@ public class RecipesListActivity extends AppCompatActivity
 
         reqBody = getIntent().getStringExtra("reqBody");
 
-        parsedJson = new Gson().fromJson(reqBody, GsonRequestSampleRec.class).getResults();
+        parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
 
-        for (GsonRecArray i : parsedJson)
+        for (GsonMealObject i : parsedJson)
         {
             mDataSet.add(i.getTitle());
             mUrlsSet.add(i.getThumbnail());
@@ -81,12 +78,12 @@ public class RecipesListActivity extends AppCompatActivity
                 //mRecyclerView.updateViewLayout(view);
                 //  mRecyclerView.invalidate();
 
-                //RequestCreator creator = new RequestCreator(parsedJson.get(0).getIngredients(), null, new ArrayList<String>().add("2"));
+                //RequestUrlCreator creator = new RequestUrlCreator(parsedJson.get(0).getIngredients(), null, new ArrayList<String>().add("2"));
                 //String url = creator.makeRequestString();
-                //HttpGetRequest req = new HttpGetRequest();
+                //HttpGetRequestTask req = new HttpGetRequestTask();
 
                 mRecipesAdapter.notifyDataSetChanged();
-                //RequestCreator creator = new RequestCreator();
+                //RequestUrlCreator creator = new RequestUrlCreator();
             }
         });
 
@@ -100,14 +97,22 @@ public class RecipesListActivity extends AppCompatActivity
                 //mRecyclerView.updateViewLayout(view);
                 //  mRecyclerView.invalidate();
 
-                //RequestCreator creator = new RequestCreator(parsedJson.get(0).getIngredients(), null, new ArrayList<String>().add("2"));
+                //RequestUrlCreator creator = new RequestUrlCreator(parsedJson.get(0).getIngredients(), null, new ArrayList<String>().add("2"));
                 //String url = creator.makeRequestString();
-                //HttpGetRequest req = new HttpGetRequest();
+                //HttpGetRequestTask req = new HttpGetRequestTask();
 
                 mRecipesAdapter.notifyDataSetChanged();
             }
         });
 
+    }
+
+
+    @Override
+    public void onResponse(Bitmap img, ImageView currentImage)
+    {
+        //currentImage.setImageBitmap(img);
+        currentImage.setImageBitmap(img);
     }
 
     public class mAdapter extends RecyclerView.Adapter<mAdapter.ViewHolder>
@@ -155,9 +160,13 @@ public class RecipesListActivity extends AppCompatActivity
         {
             holder.mTextView.setText(mDataSet.get(position));
             String url = mUrlsSet.get(position);
-            holder.mImageView.setImageResource(R.drawable.placeholder); //заглушка
-            new ImageDownloaderTask(url, holder.mImageView).execute(); ///args
             pos = position;
+            holder.mImageView.setImageResource(R.drawable.placeholder); //заглушка
+
+            imgResponseTask =  new ImageDownloaderTask(url, holder.mImageView); ///args
+            imgResponseTask.delegate = MealsListActivity.this;
+            mImage = holder.mImageView;
+            imgResponseTask.execute();
 
             holder.mCardView.setOnClickListener(new View.OnClickListener()
             {
@@ -166,7 +175,7 @@ public class RecipesListActivity extends AppCompatActivity
                 {
                     //3-е активити
                     //Передать сюда нужные данные
-                    Intent data = new Intent(RecipesListActivity.this, MenuActivity.class);
+                    Intent data = new Intent(MealsListActivity.this, MenuActivity.class);
 
                     //Singleton.parsedJsonResp = parsedJson;
                     Singleton.setParsedJsonResp(parsedJson);

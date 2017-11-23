@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,15 +20,15 @@ import com.rey.material.widget.ProgressView;
 import java.util.ArrayList;
 
 
-public class IngredientsActivity extends AppCompatActivity implements HttpGetRequest.IResponseListener
+public class IngredientsInputActivity extends AppCompatActivity implements HttpGetRequestTask.IResponseListener
 {
     private static final String INGREDIENTS_KEY_ = "INGREDIENTS";
 
     private EditText mEditText;
     private Button mFindButton;
     private String reqBody;
-    private IngredientsActivity.mAdapter mAdapter;
-    private HttpGetRequest req;
+    private IngredientsInputActivity.mAdapter mAdapter;
+    private HttpGetRequestTask req;
     private final ArrayList<String> ingredients = new ArrayList<>();
     private ProgressView mProgressView;
 
@@ -82,9 +81,9 @@ public class IngredientsActivity extends AppCompatActivity implements HttpGetReq
             @Override
             public void onClick(View v)
             {
-                RequestCreator creator = new RequestCreator(ingredients, null, null);
-                req = new HttpGetRequest(creator.makeRequestString(), mProgressView, (ViewGroup)findViewById(R.id.rel));
-                req.delegate = IngredientsActivity.this;
+                RequestUrlCreator creator = new RequestUrlCreator(ingredients, null, null);
+                req = new HttpGetRequestTask(creator.makeRequestString(), mProgressView, (ViewGroup)findViewById(R.id.rel));
+                req.delegate = IngredientsInputActivity.this;
                 req.execute();
             }
         });
@@ -95,7 +94,7 @@ public class IngredientsActivity extends AppCompatActivity implements HttpGetReq
     {
         reqBody = res;
         //Log.e("REQBODY", reqBody);
-        Intent data = new Intent(IngredientsActivity.this, RecipesListActivity.class);
+        Intent data = new Intent(IngredientsInputActivity.this, MealsListActivity.class);
         data.putExtra("reqBody", reqBody);
         setResult(RESULT_OK, data);
         startActivity(data);

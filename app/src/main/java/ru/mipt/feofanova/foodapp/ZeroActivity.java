@@ -33,7 +33,7 @@ public class ZeroActivity extends AppCompatActivity {
             }
 
             public void onFinish() {
-                Intent intent = new Intent(ZeroActivity.this, IngredientsActivity.class);
+                Intent intent = new Intent(ZeroActivity.this, IngredientsInputActivity.class);
                 startActivity(intent);
                 finish();
             }
