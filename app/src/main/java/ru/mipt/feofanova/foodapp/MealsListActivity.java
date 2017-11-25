@@ -52,7 +52,7 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
         // parsedJson = new List<>();
         basicUrl = getIntent().getStringExtra("basicUrl");
         mProgressNext = (ProgressView) findViewById(R.id.progress_next);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recipes_recycler_view);
 
         mRecyclerView.setHasFixedSize(true);
 
@@ -91,7 +91,7 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
                 Log.e("----------------BSICURL", basicUrl);
                 basicUrl = creator.changePage(basicUrl, -1);
                 Log.e("----------------BSICURL", basicUrl);
-                newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) findViewById(R.id.recycler_view));
+                newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) findViewById(R.id.recipes_recycler_view));
                 newMealsTask.delegate = MealsListActivity.this;
                 newMealsTask.execute();
                 //mRecyclerView.updateViewLayout(view);
@@ -121,7 +121,7 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
                 Log.e("----------------BSICURL", basicUrl);
                 basicUrl = creator.changePage(basicUrl, +1);
                 Log.e("----------------BSICURL", basicUrl);
-                newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) findViewById(R.id.recycler_view));
+                newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) findViewById(R.id.recipes_recycler_view));
                 newMealsTask.delegate = MealsListActivity.this;
                 newMealsTask.execute();
                 //mRecyclerView.updateViewLayout(view);
@@ -179,8 +179,8 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
             public ViewHolder(View view)
             {
                 super(view);
-                mCardView = view.findViewById(R.id.card_view);
-                mImageView = view.findViewById(R.id.img);
+                mCardView = view.findViewById(R.id.recipe_card_view);
+                mImageView = view.findViewById(R.id.recipe_card_view_image);
                 mTextView = view.findViewById(R.id.recipe_name);
             }
         }
@@ -197,7 +197,7 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
                                                       int viewType)
         {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.recipe_button, parent, false);
+                    .inflate(R.layout.recipe_card_view, parent, false);
 
             return new ViewHolder(view);
         }
