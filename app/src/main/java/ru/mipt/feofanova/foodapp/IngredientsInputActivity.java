@@ -46,8 +46,8 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
         basicUrl = "";
         mEditText = (EditText) findViewById(R.id.edit_text);
         mFindButton = (Button) findViewById(R.id.find_button);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mProgressView = (ProgressView) findViewById(R.id.progress);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recipes_recycler_view);
+        mProgressView = (ProgressView) findViewById(R.id.ingredients_progress_view);
         mRecyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(this);
@@ -127,7 +127,7 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
             {
                 super(view);
                 button = view.findViewById(R.id.ingredient_button);
-                name = view.findViewById(R.id.name);
+                name = view.findViewById(R.id.ingredient_name);
             }
         }
 

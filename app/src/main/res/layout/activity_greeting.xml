@@ -8,7 +8,7 @@
 
 
     <ImageView
-        android:id="@+id/imageView6"
+        android:id="@+id/empty_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="4.5"
@@ -16,7 +16,7 @@
         app:srcCompat="@drawable/jk" />
 
     <ImageView
-        android:id="@+id/imageView5"
+        android:id="@+id/logo_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.07"

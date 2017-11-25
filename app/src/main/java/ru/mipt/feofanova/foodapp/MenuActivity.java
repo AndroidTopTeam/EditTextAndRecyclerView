@@ -34,11 +34,11 @@ public class MenuActivity extends AppCompatActivity implements ImageDownloaderTa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        mTitleTextView = (TextView)findViewById(R.id.title);
-        mMealPhoto = (ImageView)findViewById(R.id.photo);
-        mIngredientsTitleTextView = (TextView)findViewById(R.id.ingredients);
+        mTitleTextView = (TextView)findViewById(R.id.recipe_title);
+        mMealPhoto = (ImageView)findViewById(R.id.recipe_menu_image);
+        mIngredientsTitleTextView = (TextView)findViewById(R.id.ingredients_string);
         mIngredientsList = (TextView) findViewById(R.id.ingredients_list);
-        mRecipeTextView = (TextView)findViewById(R.id.recipe);
+        mRecipeTextView = (TextView)findViewById(R.id.recipe_string);
         mRecipeDescriptionTextView = (TextView)findViewById(R.id.recipe_description);
 
         int index = getIntent().getIntExtra("currentMealIndex", 0);
