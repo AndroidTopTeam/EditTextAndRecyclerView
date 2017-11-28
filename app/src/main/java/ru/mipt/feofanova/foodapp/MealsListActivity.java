@@ -25,6 +25,9 @@ import java.util.List;
 public class MealsListActivity extends AppCompatActivity implements ImageDownloaderTask.IImageResponseListener, HttpGetRequestTask.IResponseListener
 {
 
+    private static final String RECIPY_NAMES_KEY_ = "RECYPIES";
+    private static final String PICTURE_URLS_KEY_ = "PICTURE_URLS";
+
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mRecipesAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -59,16 +62,16 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        reqBody = getIntent().getStringExtra("reqBody");
+        if (savedInstanceState == null) {
+            reqBody = getIntent().getStringExtra("reqBody");
 
-        parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
+            parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
 
-        for (GsonMealObject i : parsedJson)
-        {
-            mDataSet.add(i.getTitle());
-            mUrlsSet.add(i.getThumbnail());
+            for (GsonMealObject i : parsedJson) {
+                mDataSet.add(i.getTitle());
+                mUrlsSet.add(i.getThumbnail());
+            }
         }
-
 
         //String[] mDataSet = getResources().getStringArray(R.array.number_strings);
         mRecipesAdapter = new mAdapter(mDataSet, mUrlsSet);
@@ -243,8 +246,22 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
         {
             return mDataSet.size();
         }
+    }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
 
+        outState.putStringArrayList(RECIPY_NAMES_KEY_, mDataSet);
+        outState.putStringArrayList(PICTURE_URLS_KEY_, mUrlsSet);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        mDataSet.addAll(0, savedInstanceState.getStringArrayList(RECIPY_NAMES_KEY_));
+        mUrlsSet.addAll(0, savedInstanceState.getStringArrayList(PICTURE_URLS_KEY_));
     }
 
     public static void enableDisableViewGroup(ViewGroup viewGroup, boolean enabled)

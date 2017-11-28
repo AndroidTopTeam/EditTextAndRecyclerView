@@ -85,7 +85,7 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
                 req = new HttpGetRequestTask(
                         (basicUrl = creator.makeRequestString()),
                         mProgressView,
-                        (ViewGroup) findViewById(R.id.rel));
+                        (ViewGroup) findViewById(R.id.ingredients_relative));
 
                 req.delegate = IngredientsInputActivity.this;
                 req.execute();
@@ -159,14 +159,6 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
             return mDataSet.size();
         }
 
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-
-        mAdapter.notifyDataSetChanged();
     }
 
     @Override
