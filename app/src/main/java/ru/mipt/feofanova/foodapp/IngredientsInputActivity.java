@@ -41,7 +41,7 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
     {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ingredients);
+        setContentView(R.layout.activity_ingredients_input);
         //req.delegate = this;
         basicUrl = "";
         mEditText = (EditText) findViewById(R.id.edit_text);

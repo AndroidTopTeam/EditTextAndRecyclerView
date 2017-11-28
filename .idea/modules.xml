@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/FoodApp.iml" filepath="$PROJECT_DIR$/FoodApp.iml" />
+      <module fileurl="file://D:\javagit\Talgat\MyChief\FoodApp.iml" filepath="D:\javagit\Talgat\MyChief\FoodApp.iml" />
       <module fileurl="file://$PROJECT_DIR$/MyChief.iml" filepath="$PROJECT_DIR$/MyChief.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Talgat.iml" filepath="$PROJECT_DIR$/Talgat.iml" />
+      <module fileurl="file://D:\javagit\Talgat\MyChief\Talgat.iml" filepath="D:\javagit\Talgat\MyChief\Talgat.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

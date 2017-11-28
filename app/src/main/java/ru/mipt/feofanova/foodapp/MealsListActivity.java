@@ -46,7 +46,7 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipes_list);
+        setContentView(R.layout.activity_meals_list);
 
         //pageNumber = 1;
         // parsedJson = new List<>();
