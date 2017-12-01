@@ -14,16 +14,14 @@
         <activity android:name=".ZeroActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".MealsListActivity" />
-        <activity android:name=".MenuActivity"></activity>
-        <activity android:name=".IngredientsInputActivity"></activity>
+        <activity android:name=".MenuActivity" />
+        <activity android:name=".IngredientsInputActivity" />
+        <activity android:name=".FavoriteActivity"></activity>
     </application>
 
 </manifest>
-
-
-
-
