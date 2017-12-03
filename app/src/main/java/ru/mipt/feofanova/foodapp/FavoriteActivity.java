@@ -1,6 +1,7 @@
 package ru.mipt.feofanova.foodapp;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -20,7 +21,8 @@ import com.rey.material.widget.ProgressView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavoriteActivity extends AppCompatActivity {
+public class FavoriteActivity extends AppCompatActivity implements ImageDownloaderTask.IImageResponseListener
+{
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mRecipesAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -37,9 +39,14 @@ public class FavoriteActivity extends AppCompatActivity {
     private HttpGetRequestTask newMealsTask;
     private ProgressView mProgressNext;
     private String basicUrl;
+    private DBHelper mDBHelper;
+    private int numFavourite;
+    //private ArrayList<GsonMealObject> parsedJson;
+
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_favorite);
 
@@ -52,6 +59,28 @@ public class FavoriteActivity extends AppCompatActivity {
 
         mRecipesAdapter = new FavoriteActivity.mAdapter(mDataSet, mUrlsSet);
         mRecyclerView.setAdapter(mRecipesAdapter);
+        parsedJson = new ArrayList<>();
+        mDBHelper = new DBHelper(this);
+        //mDataSet
+        int numFavourite = mDBHelper.getCount();
+        ArrayList<String> favourites;
+        for (int i = 0; i < numFavourite; ++i)
+        {
+            favourites = mDBHelper.getValues(i + 1);
+            GsonMealObject temp = new GsonMealObject(favourites.get(0), favourites.get(2), favourites.get(1), favourites.get(4));
+            parsedJson.add(temp);
+            mDataSet.add(favourites.get(0));
+            mUrlsSet.add(favourites.get(4));
+        }
+
+
+    }
+
+    @Override
+    public void onResponse(Bitmap img, ImageView currentImage)
+    {
+        //currentImage.setImageBitmap(img);
+        currentImage.setImageBitmap(img);
     }
 
     public class mAdapter extends RecyclerView.Adapter<mAdapter.ViewHolder>
@@ -83,7 +112,7 @@ public class FavoriteActivity extends AppCompatActivity {
 
         @Override
         public mAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                                        int viewType)
+                                                      int viewType)
         {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.recipe_card_view, parent, false);
@@ -101,6 +130,12 @@ public class FavoriteActivity extends AppCompatActivity {
             pos = position;
             holder.mImageView.setImageResource(R.drawable.placeholder); //заглушка
 
+            imgResponseTask = new ImageDownloaderTask(url, holder.mImageView); ///args
+            imgResponseTask.delegate = FavoriteActivity.this;
+            mImage = holder.mImageView;
+            imgResponseTask.execute();
+
+
             holder.mCardView.setOnClickListener(new View.OnClickListener()
             {
                 @Override
@@ -109,6 +144,10 @@ public class FavoriteActivity extends AppCompatActivity {
                     //3-е активити
                     //Передать сюда нужные данные
                     Intent data = new Intent(FavoriteActivity.this, MenuActivity.class);
+                    Singleton.setParsedJsonResp(parsedJson);
+                    data.putExtra("currentMealIndex", position);
+                    setResult(RESULT_OK, data);
+                    startActivity(data);
                 }
             });
 
