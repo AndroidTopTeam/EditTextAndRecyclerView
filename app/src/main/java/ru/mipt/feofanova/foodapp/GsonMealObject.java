@@ -18,6 +18,15 @@ public class GsonMealObject
     @SerializedName("ingredients")
     @Expose
     private String ingredients;
+
+    public GsonMealObject(String title, String href, String ingredients, String thumbnail)
+    {
+        this.title = title;
+        this.href = href;
+        this.ingredients = ingredients;
+        this.thumbnail = thumbnail;
+    }
+
     @SerializedName("thumbnail")
     @Expose
     private String thumbnail;

@@ -32,12 +32,14 @@ public class MenuActivity extends AppCompatActivity implements ImageDownloaderTa
     private DBHelper mDBHelper;
     public FloatingActionButton mFloatingActionButton;
     Boolean isInFavourite;
+    Bitmap mCurrentDishPhoto;
 
     @Override
     public void onResponse(Bitmap img, ImageView currentImage)
     {
         //currentImage.setImageBitmap(img);
         currentImage.setImageBitmap(img);
+        mCurrentDishPhoto = img;
     }
 
     @Override
@@ -48,6 +50,7 @@ public class MenuActivity extends AppCompatActivity implements ImageDownloaderTa
             //TODO: change for normal pic and debug this (it isnt working now)
             mFloatingActionButton.setBackgroundColor(Color.BLACK);
             mFloatingActionButton.setImageResource(R.drawable.pic);
+            //mFloatingActionButton.notify();
         }
         isInFavourite = res;
     }
@@ -114,7 +117,9 @@ public class MenuActivity extends AppCompatActivity implements ImageDownloaderTa
                     mDBHelper.addValue(currentMeal.getTitle(), currentMeal.getIngredients(),
                             currentMeal.getHref(),
                             Calendar.getInstance().get(Calendar.DST_OFFSET) + "" +
-                                    Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + "");
+                                    Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + "",
+                            currentMeal.getThumbnail(),
+                            mCurrentDishPhoto);
 
                     //mIngredientsList.setText("sdfgh");
                 }
@@ -122,6 +127,8 @@ public class MenuActivity extends AppCompatActivity implements ImageDownloaderTa
                 {
                     //TODO: Message with text "already in favourite" (action bar all smth like that, Idont know)
                 }
+
+
 
             }
         });

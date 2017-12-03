@@ -91,6 +91,19 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
                 req.execute();
             }
         });
+
+        mFindButton.setOnLongClickListener( new View.OnLongClickListener()
+                                            {
+                                                @Override
+                                                public boolean onLongClick(View v)
+                                                {
+                                                    Intent intent = new Intent(IngredientsInputActivity.this, FavoriteActivity.class);
+                                                    startActivity(intent);
+                                                    return true;
+                                                }
+                                            }
+
+        );
     }
 
     @Override

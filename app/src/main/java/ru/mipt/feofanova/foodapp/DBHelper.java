@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteCursorDriver;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQuery;
+import android.graphics.Bitmap;
 
 import java.sql.SQLWarning;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class DBHelper extends SQLiteOpenHelper
     public static final int DB_VER = 1;
 
     private static final String CREATE_DB_REQUEST =
-            "CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, dish TEXT, ingredients TEXT, recipe TEXT, imagePath TEXT);";
+            "CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, dish TEXT, ingredients TEXT, recipe TEXT, imagePath TEXT, imageHref TEXT);";
 
     private static final class Factory implements SQLiteDatabase.CursorFactory
     {
@@ -111,7 +112,7 @@ public class DBHelper extends SQLiteOpenHelper
         return result;
     }
 
-    public void addValue(String name, String ingredients, String recipe, String path)
+    public void addValue(String name, String ingredients, String recipe, String path, String imageHref, Bitmap img)
     {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null)
@@ -121,12 +122,16 @@ public class DBHelper extends SQLiteOpenHelper
             contentValues.put("ingredients", ingredients);
             contentValues.put("recipe", recipe);
             contentValues.put("imagePath", path);
+            contentValues.put("imageHref", imageHref);
             db.insert("favourites", null, contentValues);
             db.close();
+
+            //ImageExternalStorageSaver saver = new ImageExternalStorageSaver(path, img);
+            //saver.save();
         }
     }
 
-    public void editValue(int position, String name, String dish, String ingredients, String recipe, String path)
+    public void editValue(int position, String name, String dish, String ingredients, String recipe, String path, String imageHref)
     {
         SQLiteDatabase db = getWritableDatabase();
         if (db != null)
@@ -136,6 +141,7 @@ public class DBHelper extends SQLiteOpenHelper
             contentValues.put("ingredients", ingredients);
             contentValues.put("recipe", recipe);
             contentValues.put("imagePath", path);
+            contentValues.put("imageHref", imageHref);
             db.update("favourites", contentValues, "id =  ?", new String[]{String.valueOf(position)});
             db.close();
         }
@@ -155,7 +161,7 @@ public class DBHelper extends SQLiteOpenHelper
             try
             {
                 cur = db.query("favourites",
-                        new String[]{"id", "dish", "ingredients", "recipe", "imagePath"},
+                        new String[]{"id", "dish", "ingredients", "recipe", "imagePath", "imageHref"},
                         "id = ?", new String[]{String.valueOf(position)},
                         null, null, null);
 
@@ -166,6 +172,7 @@ public class DBHelper extends SQLiteOpenHelper
                 values.add(cur.getString(cur.getColumnIndexOrThrow("ingredients")));
                 values.add(cur.getString(cur.getColumnIndexOrThrow("recipe")));
                 values.add(cur.getString(cur.getColumnIndexOrThrow("imagePath")));
+                values.add(cur.getString(cur.getColumnIndexOrThrow("imageHref")));
             } catch (Exception e)
             {
                 e.printStackTrace();
