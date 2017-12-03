@@ -1,5 +1,7 @@
 package ru.mipt.feofanova.foodapp;
 
+import android.graphics.Color;
+
 import java.util.List;
 
 /**
@@ -31,6 +33,8 @@ public class Singleton
             instance = new Singleton();
         return instance;
     }
+
+
 
 
 }
