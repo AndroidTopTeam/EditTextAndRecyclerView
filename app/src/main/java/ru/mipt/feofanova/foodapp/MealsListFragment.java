@@ -28,7 +28,6 @@ import com.rey.material.widget.ProgressView;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.app.Activity.RESULT_OK;
 import static ru.mipt.feofanova.foodapp.NavigationActivity.fragment;
 import static ru.mipt.feofanova.foodapp.NavigationActivity.mFragmentManager;
 
@@ -43,7 +42,6 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
     private RecyclerView.LayoutManager mLayoutManager;
     private final ArrayList<String> mDataSet = new ArrayList<>();
     private final ArrayList<String> mUrlsSet = new ArrayList<>();
-    //private LruCache<String, Bitmap> mMemoryCache;
     private String reqBody;
     private List<GsonMealObject> parsedJson;
     private Button prev;
@@ -71,7 +69,7 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
         super.onActivityCreated(savedInstanceState);
         mActivity = (AppCompatActivity) getActivity();
         Bundle bundle = getArguments();
-        if (bundle != null) {
+        if (bundle != null && basicUrl == null && reqBody == null) {
             basicUrl = bundle.getString("basicUrl");
             reqBody = bundle.getString("reqBody");
         }
@@ -80,14 +78,19 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
             //reqBody = mActivity.getIntent().getStringExtra("reqBody");
 
             parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
-
-            for (GsonMealObject i : parsedJson) {
-                mDataSet.add(i.getTitle());
-                mUrlsSet.add(i.getThumbnail());
+            if (mDataSet.isEmpty()) {
+                for (GsonMealObject i : parsedJson) {
+                    mDataSet.add(i.getTitle());
+                    mUrlsSet.add(i.getThumbnail());
+                }
             }
         } else {
-            mDataSet.addAll(0, savedInstanceState.getStringArrayList(RECIPY_NAMES_KEY_));
-            mUrlsSet.addAll(0, savedInstanceState.getStringArrayList(PICTURE_URLS_KEY_));
+            if (mDataSet.isEmpty()) {
+                mDataSet.addAll(0, savedInstanceState.getStringArrayList(RECIPY_NAMES_KEY_));
+            }
+            if (mUrlsSet.isEmpty()) {
+                mUrlsSet.addAll(0, savedInstanceState.getStringArrayList(PICTURE_URLS_KEY_));
+            }
             basicUrl = savedInstanceState.getString("basicUrl");
             reqBody = savedInstanceState.getString("reqBody");
         }
@@ -107,9 +110,8 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
         //pageNumber = 1;
         // parsedJson = new List<>();
         //basicUrl = mActivity.getIntent().getStringExtra("basicUrl");
-        mProgressNext = (ProgressView) mActivity.findViewById(R.id.progress_next);
-        mRecyclerView = (RecyclerView) mActivity.findViewById(R.id.recipes_recycler_view);
-
+        mProgressNext = mActivity.findViewById(R.id.progress_next);
+        mRecyclerView = mActivity.findViewById(R.id.recipes_recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(mActivity);
