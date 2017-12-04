@@ -22,18 +22,17 @@ import com.rey.material.widget.ProgressView;
 
 import java.util.ArrayList;
 
-import static android.app.Activity.RESULT_OK;
 import static ru.mipt.feofanova.foodapp.NavigationActivity.fragment;
 
 
-public class IngredientsInputActivity extends Fragment implements HttpGetRequestTask.IResponseListener
+public class IngredientsInputFragment extends Fragment implements HttpGetRequestTask.IResponseListener
 {
     private static final String INGREDIENTS_KEY_ = "INGREDIENTS";
 
     private EditText mEditText;
     private Button mFindButton;
     private String reqBody;
-    private IngredientsInputActivity.mAdapter mAdapter;
+    private IngredientsInputFragment.mAdapter mAdapter;
     private HttpGetRequestTask req;
     private final ArrayList<String> ingredients = new ArrayList<>();
     private ProgressView mProgressView;
@@ -49,7 +48,7 @@ public class IngredientsInputActivity extends Fragment implements HttpGetRequest
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.activity_ingredients_input, container,
+        View rootView = inflater.inflate(R.layout.fragment_ingredients_input, container,
                 false);
 
         return rootView;
@@ -61,7 +60,7 @@ public class IngredientsInputActivity extends Fragment implements HttpGetRequest
 
         super.onStart();
         mActivity = (AppCompatActivity) getActivity();
-        //mActivity.setContentView(R.layout.activity_ingredients_input);
+        //mActivity.setContentView(R.layout.fragment_ingredients_input);
         //req.delegate = this;
         basicUrl = "";
         mEditText = (EditText) mActivity.findViewById(R.id.edit_text);
@@ -107,7 +106,7 @@ public class IngredientsInputActivity extends Fragment implements HttpGetRequest
                         mProgressView,
                         (ViewGroup) mActivity.findViewById(R.id.ingredients_relative));
 
-                req.delegate = IngredientsInputActivity.this;
+                req.delegate = IngredientsInputFragment.this;
                 req.execute();
             }
         });
@@ -117,7 +116,7 @@ public class IngredientsInputActivity extends Fragment implements HttpGetRequest
                                                 @Override
                                                 public boolean onLongClick(View v)
                                                 {
-                                                    Intent intent = new Intent(mActivity, FavoriteActivity.class);
+                                                    Intent intent = new Intent(mActivity, FavoriteFragment.class);
                                                     startActivity(intent);
                                                     return true;
                                                 }
@@ -131,17 +130,17 @@ public class IngredientsInputActivity extends Fragment implements HttpGetRequest
     {
         reqBody = res;
         //Log.e("REQBODY", reqBody);
-        /*Intent data = new Intent(mActivity, MealsListActivity.class);
+        /*Intent data = new Intent(mActivity, MealsListFragment.class);
         data.putExtra("reqBody", reqBody);
         data.putExtra("basicUrl", basicUrl);
         mActivity.setResult(RESULT_OK, data);
         startActivity(data);*/
 
-        //MealsListActivity fragment = (MealsListActivity) mFragmentManager
+        //MealsListFragment fragment = (MealsListFragment) mFragmentManager
         //        .findFragmentByTag(TAG_1);
         //Fragment fragment = null;
         try {
-            fragment = MealsListActivity.class.newInstance();
+            fragment = MealsListFragment.class.newInstance();
         } catch (java.lang.InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

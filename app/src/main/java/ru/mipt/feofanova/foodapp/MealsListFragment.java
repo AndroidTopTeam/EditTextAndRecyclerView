@@ -6,8 +6,10 @@ import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.CardView;
@@ -27,8 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
+import static ru.mipt.feofanova.foodapp.NavigationActivity.fragment;
 
-public class MealsListActivity extends Fragment implements ImageDownloaderTask.IImageResponseListener, HttpGetRequestTask.IResponseListener
+public class MealsListFragment extends Fragment implements ImageDownloaderTask.IImageResponseListener, HttpGetRequestTask.IResponseListener
 {
 
     private static final String RECIPY_NAMES_KEY_ = "RECYPIES";
@@ -50,13 +53,13 @@ public class MealsListActivity extends Fragment implements ImageDownloaderTask.I
     private HttpGetRequestTask newMealsTask;
     private ProgressView mProgressNext;
     private String basicUrl;
-    private Activity mActivity;
+    private AppCompatActivity mActivity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.activity_meals_list, container,
+        View rootView = inflater.inflate(R.layout.fragment_meals_list, container,
                 false);
 
         return rootView;
@@ -65,7 +68,7 @@ public class MealsListActivity extends Fragment implements ImageDownloaderTask.I
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mActivity = getActivity();
+        mActivity = (AppCompatActivity) getActivity();
         Bundle bundle = getArguments();
         if (bundle != null) {
             basicUrl = bundle.getString("basicUrl");
@@ -133,7 +136,7 @@ public class MealsListActivity extends Fragment implements ImageDownloaderTask.I
                 basicUrl = creator.changePage(basicUrl, -1);
                 Log.e("----------------BSICURL", basicUrl);
                 newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) mActivity.findViewById(R.id.recipes_recycler_view));
-                newMealsTask.delegate = MealsListActivity.this;
+                newMealsTask.delegate = MealsListFragment.this;
                 newMealsTask.execute();
                 //mRecyclerView.updateViewLayout(view);
                 //  mRecyclerView.invalidate();
@@ -163,7 +166,7 @@ public class MealsListActivity extends Fragment implements ImageDownloaderTask.I
                 basicUrl = creator.changePage(basicUrl, +1);
                 Log.e("----------------BSICURL", basicUrl);
                 newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) mActivity.findViewById(R.id.recipes_recycler_view));
-                newMealsTask.delegate = MealsListActivity.this;
+                newMealsTask.delegate = MealsListFragment.this;
                 newMealsTask.execute();
                 //mRecyclerView.updateViewLayout(view);
                 //  mRecyclerView.invalidate();
@@ -254,7 +257,7 @@ public class MealsListActivity extends Fragment implements ImageDownloaderTask.I
             holder.mImageView.setImageResource(R.drawable.placeholder); //заглушка
 
             imgResponseTask = new ImageDownloaderTask(url, holder.mImageView); ///args
-            imgResponseTask.delegate = MealsListActivity.this;
+            imgResponseTask.delegate = MealsListFragment.this;
             mImage = holder.mImageView;
             imgResponseTask.execute();
 
@@ -265,14 +268,29 @@ public class MealsListActivity extends Fragment implements ImageDownloaderTask.I
                 {
                     //3-е активити
                     //Передать сюда нужные данные
-                    Intent data = new Intent(mActivity, MenuActivity.class);
+                    //Intent data = new Intent(mActivity, MenuActivity.class);
 
                     //Singleton.parsedJsonResp = parsedJson;
                     Singleton.setParsedJsonResp(parsedJson);
-                    data.putExtra("currentMealIndex", position);
+                    /*data.putExtra("currentMealIndex", position);
                     mActivity.setResult(RESULT_OK, data);
-                    startActivity(data);
+                    startActivity(data);*/
 
+                    try {
+                        fragment = MenuActivity.class.newInstance();
+                    } catch (java.lang.InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("currentMealIndex", position);
+                    fragment.setArguments(bundle);
+
+                    FragmentManager mFragmentManager = mActivity.getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.flContent, fragment);
+                    fragmentTransaction.commit();
                     //holder.mTextView.setText("ouch!");
                 }
             });

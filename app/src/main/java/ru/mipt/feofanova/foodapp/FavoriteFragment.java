@@ -3,13 +3,10 @@ package ru.mipt.feofanova.foodapp;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +14,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.rey.material.widget.ProgressView;
 
 import java.util.ArrayList;
@@ -25,7 +21,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
-public class FavoriteActivity extends Fragment implements ImageDownloaderTask.IImageResponseListener
+public class FavoriteFragment extends Fragment implements ImageDownloaderTask.IImageResponseListener
 {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mRecipesAdapter;
@@ -51,7 +47,7 @@ public class FavoriteActivity extends Fragment implements ImageDownloaderTask.II
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.activity_favorite, container,
+        View rootView = inflater.inflate(R.layout.fragment_favorite, container,
                 false);
 
         return rootView;
@@ -62,7 +58,7 @@ public class FavoriteActivity extends Fragment implements ImageDownloaderTask.II
     {
         super.onStart();
         //super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_favorite);
+        //setContentView(R.layout.fragment_favorite);
 
         mRecyclerView = getActivity().findViewById(R.id.favorite_recipes_recycler_view);
 
@@ -71,7 +67,7 @@ public class FavoriteActivity extends Fragment implements ImageDownloaderTask.II
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mRecipesAdapter = new FavoriteActivity.mAdapter(mDataSet, mUrlsSet);
+        mRecipesAdapter = new FavoriteFragment.mAdapter(mDataSet, mUrlsSet);
         mRecyclerView.setAdapter(mRecipesAdapter);
         parsedJson = new ArrayList<>();
         mDBHelper = new DBHelper(getActivity());
@@ -131,7 +127,7 @@ public class FavoriteActivity extends Fragment implements ImageDownloaderTask.II
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.recipe_card_view, parent, false);
 
-            return new FavoriteActivity.mAdapter.ViewHolder(view);
+            return new FavoriteFragment.mAdapter.ViewHolder(view);
         }
 
         public int pos;
@@ -145,7 +141,7 @@ public class FavoriteActivity extends Fragment implements ImageDownloaderTask.II
             holder.mImageView.setImageResource(R.drawable.placeholder); //заглушка
 
             imgResponseTask = new ImageDownloaderTask(url, holder.mImageView); ///args
-            imgResponseTask.delegate = FavoriteActivity.this;
+            imgResponseTask.delegate = FavoriteFragment.this;
             mImage = holder.mImageView;
             imgResponseTask.execute();
 

@@ -22,10 +22,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MealsListActivity" />
+        <activity android:name=".MealsListFragment" />
         <activity android:name=".MenuActivity" />
-        <activity android:name=".IngredientsInputActivity" />
-        <activity android:name=".FavoriteActivity" />
+        <activity android:name=".IngredientsInputFragment" />
+        <activity android:name=".FavoriteFragment" />
         <activity android:name=".NavigationActivity"></activity>
     </application>
 

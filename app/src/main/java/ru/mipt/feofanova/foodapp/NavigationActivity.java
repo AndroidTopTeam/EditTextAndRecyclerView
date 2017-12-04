@@ -1,6 +1,5 @@
 package ru.mipt.feofanova.foodapp;
 
-import android.app.Activity;
 import android.content.Context;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -34,7 +33,7 @@ public class NavigationActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             try {
-                fragment = IngredientsInputActivity.class.newInstance();
+                fragment = IngredientsInputFragment.class.newInstance();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -134,13 +133,13 @@ public class NavigationActivity extends AppCompatActivity {
         Class fragmentClass;
         switch(menuItem.getItemId()) {
             case R.id.favorite_fragment:
-                fragmentClass = FavoriteActivity.class;
+                fragmentClass = FavoriteFragment.class;
                 break;
             case R.id.properties_fragment:
                 fragmentClass = ScreenOne.class;
                 break;
             case R.id.search_fragment:
-                fragmentClass = IngredientsInputActivity.class;
+                fragmentClass = IngredientsInputFragment.class;
                 break;
             default:
                 fragmentClass = ScreenOne.class;
