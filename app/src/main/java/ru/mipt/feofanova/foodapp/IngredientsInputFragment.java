@@ -23,6 +23,7 @@ import com.rey.material.widget.ProgressView;
 import java.util.ArrayList;
 
 import static ru.mipt.feofanova.foodapp.NavigationActivity.fragment;
+import static ru.mipt.feofanova.foodapp.NavigationActivity.mFragmentManager;
 
 
 public class IngredientsInputFragment extends Fragment implements HttpGetRequestTask.IResponseListener
@@ -36,7 +37,6 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
     private HttpGetRequestTask req;
     private final ArrayList<String> ingredients = new ArrayList<>();
     private ProgressView mProgressView;
-    private FragmentManager mFragmentManager;
     final static String TAG_1 = "FRAGMENT_1";
 
     private RecyclerView mRecyclerView;
@@ -151,10 +151,9 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
         bundle.putString("basicUrl", basicUrl);
         fragment.setArguments(bundle);
 
-        mFragmentManager = mActivity.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.flContent, fragment);
-        fragmentTransaction.commit();
+        fragmentTransaction.addToBackStack(null).commit();
 
     }
 

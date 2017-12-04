@@ -23,6 +23,7 @@ public class NavigationActivity extends AppCompatActivity {
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
     public static Fragment fragment;
+    public static FragmentManager mFragmentManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,7 @@ public class NavigationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_navigation);
 
         mTitle = mDrawerTitle = getTitle();
+        mFragmentManager = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
             try {
@@ -90,6 +92,13 @@ public class NavigationActivity extends AppCompatActivity {
 
         //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
+
+        mFragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                fragment = mFragmentManager.findFragmentById(R.id.flContent);
+            }
+        });
     }
 
     @Override
@@ -152,8 +161,7 @@ public class NavigationActivity extends AppCompatActivity {
         }
 
         // Вставить фрагмент, заменяя любой существующий
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+        mFragmentManager.beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
 
         // Выделение существующего элемента выполнено с помощью
         // NavigationView
@@ -166,11 +174,36 @@ public class NavigationActivity extends AppCompatActivity {
         mDrawerLayout.closeDrawers();
     }
 
+    //переменная хранящая позицию текущего отображаемого фрагмента. Изначально - 0
+//т.е. первый фрагмент. При замене фрагментов надо менять это число
+//не забываем сохранять это значение при пересоздании активити
+    int currentPositionOfFragment = 0;
+
+    @Override
+    public void onBackPressed()
+    {
+        if (currentPositionOfFragment != 0)
+        {
+            mFragmentManager.popBackStack();
+            /*int index = getFragmentManager().getBackStackEntryCount() - 1;
+            FragmentManager.BackStackEntry backEntry = getSupportFragmentManager().getBackStackEntryAt(index);
+            String tag = backEntry.getName();
+            fragment = getSupportFragmentManager().findFragmentByTag(tag);*/
+            fragment = mFragmentManager.findFragmentById(R.id.flContent);
+            //отображается не первый фрагмент, значит отображаем его
+        }
+        else
+        {
+            //отображается первый фрагмент, значит выходим из приложения
+            super.onBackPressed();
+        }
+    }
+
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
-        getSupportFragmentManager().putFragment(outState,"myfragment", fragment);
+        mFragmentManager.putFragment(outState,"myfragment", fragment);
     }
     public void onRestoreInstanceState(Bundle inState){
-        fragment = getSupportFragmentManager().getFragment(inState,"myfragment");
+        fragment = mFragmentManager.getFragment(inState,"myfragment");
     }
 }

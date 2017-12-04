@@ -30,6 +30,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static ru.mipt.feofanova.foodapp.NavigationActivity.fragment;
+import static ru.mipt.feofanova.foodapp.NavigationActivity.mFragmentManager;
 
 public class MealsListFragment extends Fragment implements ImageDownloaderTask.IImageResponseListener, HttpGetRequestTask.IResponseListener
 {
@@ -287,10 +288,9 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
                     bundle.putInt("currentMealIndex", position);
                     fragment.setArguments(bundle);
 
-                    FragmentManager mFragmentManager = mActivity.getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
                     fragmentTransaction.replace(R.id.flContent, fragment);
-                    fragmentTransaction.commit();
+                    fragmentTransaction.addToBackStack(null).commit();
                     //holder.mTextView.setText("ouch!");
                 }
             });
