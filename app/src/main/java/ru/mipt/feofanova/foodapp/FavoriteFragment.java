@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
+import static ru.mipt.feofanova.foodapp.NavigationActivity.fragment;
+import static ru.mipt.feofanova.foodapp.NavigationActivity.mFragmentManager;
 
 public class FavoriteFragment extends Fragment implements ImageDownloaderTask.IImageResponseListener
 {
@@ -153,11 +156,21 @@ public class FavoriteFragment extends Fragment implements ImageDownloaderTask.II
                 {
                     //3-е активити
                     //Передать сюда нужные данные
-                    Intent data = new Intent(getActivity(), MenuActivity.class);
                     Singleton.setParsedJsonResp(parsedJson);
-                    data.putExtra("currentMealIndex", position);
-                    getActivity().setResult(RESULT_OK, data);
-                    startActivity(data);
+                    try {
+                        fragment = MenuActivity.class.newInstance();
+                    } catch (java.lang.InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("currentMealIndex", position);
+                    fragment.setArguments(bundle);
+
+                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.flContent, fragment);
+                    fragmentTransaction.addToBackStack(null).commit();
                 }
             });
 
