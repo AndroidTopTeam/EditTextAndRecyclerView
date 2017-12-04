@@ -40,7 +40,7 @@ public class ImageDownloaderTask extends AsyncTask<Void, Void, Bitmap>
 
     public void addBitmapToMemoryCache(String key, Bitmap bitmap)
     {
-        if (getBitmapFromMemoryCache(key) == null)
+        if (getBitmapFromMemoryCache(key) == null && key != null && bitmap != null)
         {
             BitmapLru.mMemoryCache.put(key, bitmap);
         }

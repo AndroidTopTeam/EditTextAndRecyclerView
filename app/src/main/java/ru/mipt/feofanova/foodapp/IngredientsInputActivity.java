@@ -1,7 +1,10 @@
 package ru.mipt.feofanova.foodapp;
 
+import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,8 +22,11 @@ import com.rey.material.widget.ProgressView;
 
 import java.util.ArrayList;
 
+import static android.app.Activity.RESULT_OK;
+import static ru.mipt.feofanova.foodapp.NavigationActivity.fragment;
 
-public class IngredientsInputActivity extends AppCompatActivity implements HttpGetRequestTask.IResponseListener
+
+public class IngredientsInputActivity extends Fragment implements HttpGetRequestTask.IResponseListener
 {
     private static final String INGREDIENTS_KEY_ = "INGREDIENTS";
 
@@ -31,30 +37,44 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
     private HttpGetRequestTask req;
     private final ArrayList<String> ingredients = new ArrayList<>();
     private ProgressView mProgressView;
+    private FragmentManager mFragmentManager;
+    final static String TAG_1 = "FRAGMENT_1";
 
     private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private String basicUrl;
+    AppCompatActivity mActivity;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View rootView = inflater.inflate(R.layout.activity_ingredients_input, container,
+                false);
+
+        return rootView;
+    }
+
+    @Override
+    public void onStart()
     {
 
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ingredients_input);
+        super.onStart();
+        mActivity = (AppCompatActivity) getActivity();
+        //mActivity.setContentView(R.layout.activity_ingredients_input);
         //req.delegate = this;
         basicUrl = "";
-        mEditText = (EditText) findViewById(R.id.edit_text);
-        mFindButton = (Button) findViewById(R.id.find_button);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recipes_recycler_view);
-        mProgressView = (ProgressView) findViewById(R.id.ingredients_progress_view);
+        mEditText = (EditText) mActivity.findViewById(R.id.edit_text);
+        mRecyclerView = (RecyclerView) mActivity.findViewById(R.id.recipes_recycler_view);
+        mProgressView = (ProgressView) mActivity.findViewById(R.id.ingredients_progress_view);
+        mFindButton = mActivity.findViewById(R.id.find_button);
         mRecyclerView.setHasFixedSize(true);
 
-        mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager = new LinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
 
-        mAdapter = new mAdapter(this,
+        mAdapter = new mAdapter(mActivity,
                 R.layout.ingredient_button, ingredients);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -85,7 +105,7 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
                 req = new HttpGetRequestTask(
                         (basicUrl = creator.makeRequestString()),
                         mProgressView,
-                        (ViewGroup) findViewById(R.id.ingredients_relative));
+                        (ViewGroup) mActivity.findViewById(R.id.ingredients_relative));
 
                 req.delegate = IngredientsInputActivity.this;
                 req.execute();
@@ -97,7 +117,7 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
                                                 @Override
                                                 public boolean onLongClick(View v)
                                                 {
-                                                    Intent intent = new Intent(IngredientsInputActivity.this, FavoriteActivity.class);
+                                                    Intent intent = new Intent(mActivity, FavoriteActivity.class);
                                                     startActivity(intent);
                                                     return true;
                                                 }
@@ -111,11 +131,32 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
     {
         reqBody = res;
         //Log.e("REQBODY", reqBody);
-        Intent data = new Intent(IngredientsInputActivity.this, MealsListActivity.class);
+        /*Intent data = new Intent(mActivity, MealsListActivity.class);
         data.putExtra("reqBody", reqBody);
         data.putExtra("basicUrl", basicUrl);
-        setResult(RESULT_OK, data);
-        startActivity(data);
+        mActivity.setResult(RESULT_OK, data);
+        startActivity(data);*/
+
+        //MealsListActivity fragment = (MealsListActivity) mFragmentManager
+        //        .findFragmentByTag(TAG_1);
+        //Fragment fragment = null;
+        try {
+            fragment = MealsListActivity.class.newInstance();
+        } catch (java.lang.InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        Bundle bundle = new Bundle();
+        bundle.putString("reqBody", reqBody);
+        bundle.putString("basicUrl", basicUrl);
+        fragment.setArguments(bundle);
+
+        mFragmentManager = mActivity.getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.flContent, fragment);
+        fragmentTransaction.commit();
+
     }
 
     class mAdapter extends RecyclerView.Adapter<mAdapter.ViewHolder>
@@ -183,9 +224,11 @@ public class IngredientsInputActivity extends AppCompatActivity implements HttpG
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState)
-    {
-        ingredients.addAll(0, savedInstanceState.getStringArrayList(INGREDIENTS_KEY_));
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            ingredients.addAll(0, savedInstanceState.getStringArrayList(INGREDIENTS_KEY_));
+        }
     }
 
     public static void enableDisableViewGroup(ViewGroup viewGroup, boolean enabled)

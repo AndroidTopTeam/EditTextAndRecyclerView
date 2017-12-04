@@ -49,7 +49,7 @@ public class MenuActivity extends AppCompatActivity implements ImageDownloaderTa
         {
             //TODO: change for normal pic and debug this (it isnt working now)
             mFloatingActionButton.setBackgroundColor(Color.BLACK);
-            mFloatingActionButton.setImageResource(R.drawable.pic);
+            mFloatingActionButton.setImageResource(R.drawable.star);
             //mFloatingActionButton.notify();
         }
         isInFavourite = res;
@@ -114,6 +114,7 @@ public class MenuActivity extends AppCompatActivity implements ImageDownloaderTa
                 //save in favorites
                 if (!isInFavourite)
                 {
+                    mFloatingActionButton.setImageResource(R.drawable.star);
                     mDBHelper.addValue(currentMeal.getTitle(), currentMeal.getIngredients(),
                             currentMeal.getHref(),
                             Calendar.getInstance().get(Calendar.DST_OFFSET) + "" +
