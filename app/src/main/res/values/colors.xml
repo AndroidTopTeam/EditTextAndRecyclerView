@@ -5,6 +5,7 @@
 <color name="colorAccent">#6B8E23</color>
 <color name="beije">#FFFACD</color>
 <color name="grey">#696969</color>
+    <color name="white">#FFFFFF</color>
 
     <color name="colorPrimaryN">#282849</color>
     <color name="colorPrimaryDarkN">#000005</color>

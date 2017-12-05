@@ -8,6 +8,15 @@
     <string name="prev">Prev</string>
     <string name="next">Next</string>
     <string name="recipe_deleted">The recipe was just deleted \n from favorites!</string>
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="favorite">Favorite meals</string>
+    <string name="properties">Properties</string>
+    <string name="search">Search for recipe</string>
 
 </resources>
 

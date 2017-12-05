@@ -1,25 +1,23 @@
 package ru.mipt.feofanova.foodapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.view.Menu;
+import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
-
 import android.support.design.widget.FloatingActionButton;
-import android.widget.Toast;
 
 
-public class MenuActivity extends AppCompatActivity implements ImageDownloaderTask.IImageResponseListener, FavouriteButtonColorChangerTask.ColorChangerResponseListener
+public class MenuActivity extends Fragment implements ImageDownloaderTask.IImageResponseListener, FavouriteButtonColorChangerTask.ColorChangerResponseListener
 {
     TextView mTitleTextView;
     ImageView mMealPhoto;
@@ -33,6 +31,7 @@ public class MenuActivity extends AppCompatActivity implements ImageDownloaderTa
     public FloatingActionButton mFloatingActionButton;
     Boolean isInFavourite;
     Bitmap mCurrentDishPhoto;
+    AppCompatActivity mActivity;
 
     @Override
     public void onResponse(Bitmap img, ImageView currentImage)
@@ -49,30 +48,43 @@ public class MenuActivity extends AppCompatActivity implements ImageDownloaderTa
         {
             //TODO: change for normal pic and debug this (it isnt working now)
             mFloatingActionButton.setBackgroundColor(Color.BLACK);
-            mFloatingActionButton.setImageResource(R.drawable.pic);
+            mFloatingActionButton.setImageResource(R.drawable.star);
             //mFloatingActionButton.notify();
         }
         isInFavourite = res;
     }
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View rootView = inflater.inflate(R.layout.activity_menu, container,
+                false);
+
+        return rootView;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public void onActivityCreated(Bundle savedInstanceState)
     {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu);
+        super.onActivityCreated(savedInstanceState);
+        mActivity = (AppCompatActivity) getActivity();
 
-        mTitleTextView = (TextView) findViewById(R.id.recipe_title);
-        mMealPhoto = (ImageView) findViewById(R.id.recipe_menu_image);
-        mIngredientsTitleTextView = (TextView) findViewById(R.id.ingredients_string);
-        mIngredientsList = (TextView) findViewById(R.id.ingredients_list);
-        mRecipeTextView = (TextView) findViewById(R.id.recipe_string);
-        mRecipeDescriptionTextView = (TextView) findViewById(R.id.recipe_description);
+        mTitleTextView = (TextView) mActivity.findViewById(R.id.recipe_title);
+        mMealPhoto = (ImageView) mActivity.findViewById(R.id.recipe_menu_image);
+        mIngredientsTitleTextView = (TextView) mActivity.findViewById(R.id.ingredients_string);
+        mIngredientsList = (TextView) mActivity.findViewById(R.id.ingredients_list);
+        mRecipeTextView = (TextView) mActivity.findViewById(R.id.recipe_string);
+        mRecipeDescriptionTextView = (TextView) mActivity.findViewById(R.id.recipe_description);
 
-        mDBHelper = new DBHelper(this);
+        mDBHelper = new DBHelper(mActivity);
 
-
-        int index = getIntent().getIntExtra("currentMealIndex", 0);
+        //int index = getIntent().getIntExtra("currentMealIndex", 0);
+        Bundle bundle = getArguments();
+        int index = 0;
+        if (bundle != null) {
+            index = bundle.getInt("currentMealIndex");
+        }
         currentMeal = Singleton.getInstance().getParsedJsonResp().get(index);
         //Log.e("----CURRENTMEAL",currentMeal.getTitle());
 
@@ -100,9 +112,9 @@ public class MenuActivity extends AppCompatActivity implements ImageDownloaderTa
 
 
 
-        mFloatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
+        mFloatingActionButton = (FloatingActionButton) mActivity.findViewById(R.id.fab);
         //TODO: here is the checking for favourite dish, change the pic on onResponse(bool)
-        FavouriteButtonColorChangerTask favouriteButtonColorChangerTask = new FavouriteButtonColorChangerTask(currentMeal.getTitle(), null, this);
+        FavouriteButtonColorChangerTask favouriteButtonColorChangerTask = new FavouriteButtonColorChangerTask(currentMeal.getTitle(), null, mActivity);
         favouriteButtonColorChangerTask.delegate = MenuActivity.this;
         favouriteButtonColorChangerTask.execute();
 
@@ -114,6 +126,7 @@ public class MenuActivity extends AppCompatActivity implements ImageDownloaderTa
                 //save in favorites
                 if (!isInFavourite)
                 {
+                    mFloatingActionButton.setImageResource(R.drawable.star);
                     mDBHelper.addValue(currentMeal.getTitle(), currentMeal.getIngredients(),
                             currentMeal.getHref(),
                             Calendar.getInstance().get(Calendar.DST_OFFSET) + "" +

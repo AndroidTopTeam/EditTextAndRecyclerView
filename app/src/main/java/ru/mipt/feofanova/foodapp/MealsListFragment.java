@@ -1,10 +1,15 @@
 package ru.mipt.feofanova.foodapp;
 
+import android.app.Activity;
+import android.content.Context;
+import android.support.v4.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.CardView;
@@ -12,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,7 +28,10 @@ import com.rey.material.widget.ProgressView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MealsListActivity extends AppCompatActivity implements ImageDownloaderTask.IImageResponseListener, HttpGetRequestTask.IResponseListener
+import static ru.mipt.feofanova.foodapp.NavigationActivity.fragment;
+import static ru.mipt.feofanova.foodapp.NavigationActivity.mFragmentManager;
+
+public class MealsListFragment extends Fragment implements ImageDownloaderTask.IImageResponseListener, HttpGetRequestTask.IResponseListener
 {
 
     private static final String RECIPY_NAMES_KEY_ = "RECYPIES";
@@ -33,7 +42,6 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
     private RecyclerView.LayoutManager mLayoutManager;
     private final ArrayList<String> mDataSet = new ArrayList<>();
     private final ArrayList<String> mUrlsSet = new ArrayList<>();
-    //private LruCache<String, Bitmap> mMemoryCache;
     private String reqBody;
     private List<GsonMealObject> parsedJson;
     private Button prev;
@@ -44,41 +52,77 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
     private HttpGetRequestTask newMealsTask;
     private ProgressView mProgressNext;
     private String basicUrl;
+    private AppCompatActivity mActivity;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View rootView = inflater.inflate(R.layout.fragment_meals_list, container,
+                false);
+
+        return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mActivity = (AppCompatActivity) getActivity();
+        Bundle bundle = getArguments();
+        if (bundle != null && basicUrl == null && reqBody == null) {
+            basicUrl = bundle.getString("basicUrl");
+            reqBody = bundle.getString("reqBody");
+        }
+
+        if (savedInstanceState == null) {
+            //reqBody = mActivity.getIntent().getStringExtra("reqBody");
+
+            parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
+            if (mDataSet.isEmpty()) {
+                for (GsonMealObject i : parsedJson) {
+                    mDataSet.add(i.getTitle());
+                    mUrlsSet.add(i.getThumbnail());
+                }
+            }
+        } else {
+            if (mDataSet.isEmpty()) {
+                mDataSet.addAll(0, savedInstanceState.getStringArrayList(RECIPY_NAMES_KEY_));
+            }
+            if (mUrlsSet.isEmpty()) {
+                mUrlsSet.addAll(0, savedInstanceState.getStringArrayList(PICTURE_URLS_KEY_));
+            }
+            basicUrl = savedInstanceState.getString("basicUrl");
+            reqBody = savedInstanceState.getString("reqBody");
+        }
+    }
+
+    @Override
+    public void onStart()
     {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_meals_list);
+        super.onStart();
+
+        View view = mActivity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
 
         //pageNumber = 1;
         // parsedJson = new List<>();
-        basicUrl = getIntent().getStringExtra("basicUrl");
-        mProgressNext = (ProgressView) findViewById(R.id.progress_next);
-        mRecyclerView = (RecyclerView) findViewById(R.id.recipes_recycler_view);
-
+        //basicUrl = mActivity.getIntent().getStringExtra("basicUrl");
+        mProgressNext = mActivity.findViewById(R.id.progress_next);
+        mRecyclerView = mActivity.findViewById(R.id.recipes_recycler_view);
         mRecyclerView.setHasFixedSize(true);
 
-        mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager = new LinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
-        if (savedInstanceState == null) {
-            reqBody = getIntent().getStringExtra("reqBody");
-
-            parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
-
-            for (GsonMealObject i : parsedJson) {
-                mDataSet.add(i.getTitle());
-                mUrlsSet.add(i.getThumbnail());
-            }
-        }
 
         //String[] mDataSet = getResources().getStringArray(R.array.number_strings);
         mRecipesAdapter = new mAdapter(mDataSet, mUrlsSet);
         mRecyclerView.setAdapter(mRecipesAdapter);
 
-        prev = (Button) findViewById(R.id.prev_button);
-        next = (Button) findViewById(R.id.next_button);
+        prev = (Button) mActivity.findViewById(R.id.prev_button);
+        next = (Button) mActivity.findViewById(R.id.next_button);
         prev.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -94,8 +138,8 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
                 Log.e("----------------BSICURL", basicUrl);
                 basicUrl = creator.changePage(basicUrl, -1);
                 Log.e("----------------BSICURL", basicUrl);
-                newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) findViewById(R.id.recipes_recycler_view));
-                newMealsTask.delegate = MealsListActivity.this;
+                newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) mActivity.findViewById(R.id.recipes_recycler_view));
+                newMealsTask.delegate = MealsListFragment.this;
                 newMealsTask.execute();
                 //mRecyclerView.updateViewLayout(view);
                 //  mRecyclerView.invalidate();
@@ -124,8 +168,8 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
                 Log.e("----------------BSICURL", basicUrl);
                 basicUrl = creator.changePage(basicUrl, +1);
                 Log.e("----------------BSICURL", basicUrl);
-                newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) findViewById(R.id.recipes_recycler_view));
-                newMealsTask.delegate = MealsListActivity.this;
+                newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) mActivity.findViewById(R.id.recipes_recycler_view));
+                newMealsTask.delegate = MealsListFragment.this;
                 newMealsTask.execute();
                 //mRecyclerView.updateViewLayout(view);
                 //  mRecyclerView.invalidate();
@@ -216,7 +260,7 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
             holder.mImageView.setImageResource(R.drawable.placeholder); //заглушка
 
             imgResponseTask = new ImageDownloaderTask(url, holder.mImageView); ///args
-            imgResponseTask.delegate = MealsListActivity.this;
+            imgResponseTask.delegate = MealsListFragment.this;
             mImage = holder.mImageView;
             imgResponseTask.execute();
 
@@ -227,14 +271,28 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
                 {
                     //3-е активити
                     //Передать сюда нужные данные
-                    Intent data = new Intent(MealsListActivity.this, MenuActivity.class);
+                    //Intent data = new Intent(mActivity, MenuActivity.class);
 
                     //Singleton.parsedJsonResp = parsedJson;
                     Singleton.setParsedJsonResp(parsedJson);
-                    data.putExtra("currentMealIndex", position);
-                    setResult(RESULT_OK, data);
-                    startActivity(data);
+                    /*data.putExtra("currentMealIndex", position);
+                    mActivity.setResult(RESULT_OK, data);
+                    startActivity(data);*/
 
+                    try {
+                        fragment = MenuActivity.class.newInstance();
+                    } catch (java.lang.InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("currentMealIndex", position);
+                    fragment.setArguments(bundle);
+
+                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.flContent, fragment);
+                    fragmentTransaction.addToBackStack(null).commit();
                     //holder.mTextView.setText("ouch!");
                 }
             });
@@ -255,13 +313,9 @@ public class MealsListActivity extends AppCompatActivity implements ImageDownloa
 
         outState.putStringArrayList(RECIPY_NAMES_KEY_, mDataSet);
         outState.putStringArrayList(PICTURE_URLS_KEY_, mUrlsSet);
-    }
 
-    @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState)
-    {
-        mDataSet.addAll(0, savedInstanceState.getStringArrayList(RECIPY_NAMES_KEY_));
-        mUrlsSet.addAll(0, savedInstanceState.getStringArrayList(PICTURE_URLS_KEY_));
+        outState.putString("basicUrl", basicUrl);
+        outState.putString("reqBody", reqBody);
     }
 
     public static void enableDisableViewGroup(ViewGroup viewGroup, boolean enabled)

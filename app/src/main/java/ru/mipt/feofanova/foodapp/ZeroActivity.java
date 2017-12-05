@@ -6,6 +6,7 @@ package ru.mipt.feofanova.foodapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 
 public class ZeroActivity extends AppCompatActivity {
@@ -33,7 +34,7 @@ public class ZeroActivity extends AppCompatActivity {
             }
 
             public void onFinish() {
-                Intent intent = new Intent(ZeroActivity.this, IngredientsInputActivity.class);
+                Intent intent = new Intent(ZeroActivity.this, NavigationActivity.class);
                 startActivity(intent);
                 finish();
             }

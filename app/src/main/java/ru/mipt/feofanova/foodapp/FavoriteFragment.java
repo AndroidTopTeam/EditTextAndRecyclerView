@@ -2,12 +2,12 @@ package ru.mipt.feofanova.foodapp;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,13 +15,16 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.rey.material.widget.ProgressView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FavoriteActivity extends AppCompatActivity implements ImageDownloaderTask.IImageResponseListener
+import static android.app.Activity.RESULT_OK;
+import static ru.mipt.feofanova.foodapp.NavigationActivity.fragment;
+import static ru.mipt.feofanova.foodapp.NavigationActivity.mFragmentManager;
+
+public class FavoriteFragment extends Fragment implements ImageDownloaderTask.IImageResponseListener
 {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mRecipesAdapter;
@@ -43,24 +46,34 @@ public class FavoriteActivity extends AppCompatActivity implements ImageDownload
     private int numFavourite;
     //private ArrayList<GsonMealObject> parsedJson;
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View rootView = inflater.inflate(R.layout.fragment_favorite, container,
+                false);
+
+        return rootView;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
+    public void onStart()
     {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_favorite);
+        super.onStart();
+        //super.onCreate(savedInstanceState);
+        //setContentView(R.layout.fragment_favorite);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.favorite_recipes_recycler_view);
+        mRecyclerView = getActivity().findViewById(R.id.favorite_recipes_recycler_view);
 
         mRecyclerView.setHasFixedSize(true);
 
-        mLayoutManager = new LinearLayoutManager(this);
+        mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        mRecipesAdapter = new FavoriteActivity.mAdapter(mDataSet, mUrlsSet);
+        mRecipesAdapter = new FavoriteFragment.mAdapter(mDataSet, mUrlsSet);
         mRecyclerView.setAdapter(mRecipesAdapter);
         parsedJson = new ArrayList<>();
-        mDBHelper = new DBHelper(this);
+        mDBHelper = new DBHelper(getActivity());
         //mDataSet
         int numFavourite = mDBHelper.getCount();
         ArrayList<String> favourites;
@@ -117,7 +130,7 @@ public class FavoriteActivity extends AppCompatActivity implements ImageDownload
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.recipe_card_view, parent, false);
 
-            return new FavoriteActivity.mAdapter.ViewHolder(view);
+            return new FavoriteFragment.mAdapter.ViewHolder(view);
         }
 
         public int pos;
@@ -131,7 +144,7 @@ public class FavoriteActivity extends AppCompatActivity implements ImageDownload
             holder.mImageView.setImageResource(R.drawable.placeholder); //заглушка
 
             imgResponseTask = new ImageDownloaderTask(url, holder.mImageView); ///args
-            imgResponseTask.delegate = FavoriteActivity.this;
+            imgResponseTask.delegate = FavoriteFragment.this;
             mImage = holder.mImageView;
             imgResponseTask.execute();
 
@@ -143,11 +156,21 @@ public class FavoriteActivity extends AppCompatActivity implements ImageDownload
                 {
                     //3-е активити
                     //Передать сюда нужные данные
-                    Intent data = new Intent(FavoriteActivity.this, MenuActivity.class);
                     Singleton.setParsedJsonResp(parsedJson);
-                    data.putExtra("currentMealIndex", position);
-                    setResult(RESULT_OK, data);
-                    startActivity(data);
+                    try {
+                        fragment = MenuActivity.class.newInstance();
+                    } catch (java.lang.InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                    Bundle bundle = new Bundle();
+                    bundle.putInt("currentMealIndex", position);
+                    fragment.setArguments(bundle);
+
+                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.flContent, fragment);
+                    fragmentTransaction.addToBackStack(null).commit();
                 }
             });
 
