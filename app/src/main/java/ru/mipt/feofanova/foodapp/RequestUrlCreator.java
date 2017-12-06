@@ -121,5 +121,4 @@ public class RequestUrlCreator
             return basicUrl;
     }
 
-
 }
