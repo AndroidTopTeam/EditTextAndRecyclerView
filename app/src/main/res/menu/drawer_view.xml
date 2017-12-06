@@ -3,15 +3,16 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/favorite_fragment"
-            android:icon="@drawable/ic_one"
+            android:icon="@drawable/star_grey"
             android:title="@string/favorite" />
         <item
             android:id="@+id/properties_fragment"
-            android:icon="@drawable/ic_two"
+            android:icon="@drawable/fix"
             android:title="@string/properties" />
         <item
             android:id="@+id/search_fragment"
-            android:icon="@drawable/ic_three"
+            android:icon="@drawable/search_icon"
+
             android:title="@string/search" />
     </group>
 </menu>
