@@ -1,6 +1,7 @@
 package ru.mipt.feofanova.foodapp;
 
 import android.os.AsyncTask;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,7 +13,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static ru.mipt.feofanova.foodapp.IngredientsInputFragment.enableDisableViewGroup;
+import static ru.mipt.feofanova.foodapp.fragments.IngredientsInputFragment.enableDisableViewGroup;
 
 /**
  * Created by Талгат on 25.10.2017.
@@ -40,7 +41,9 @@ public class HttpGetRequestTask extends AsyncTask<Void, Void, String>
         mViewGroup = viewGroup;
 
         mProgressView.setVisibility(View.VISIBLE);
-        enableDisableViewGroup(viewGroup, false);
+        if (!(mViewGroup instanceof RecyclerView)){
+            enableDisableViewGroup(viewGroup, false);
+        }
 
         reqUrl = url;
         //this.delegate =  delegate;
@@ -80,7 +83,9 @@ public class HttpGetRequestTask extends AsyncTask<Void, Void, String>
     {
         super.onPostExecute(res);
         mProgressView.setVisibility(View.INVISIBLE);
-        enableDisableViewGroup(mViewGroup, true);
+        if (!(mViewGroup instanceof RecyclerView)){
+            enableDisableViewGroup(mViewGroup, true);
+        }
         delegate.onResponse(res);
     }
 

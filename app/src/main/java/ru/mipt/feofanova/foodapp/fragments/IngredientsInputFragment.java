@@ -1,6 +1,5 @@
-package ru.mipt.feofanova.foodapp;
+package ru.mipt.feofanova.foodapp.fragments;
 
-import android.support.v4.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
@@ -21,6 +20,10 @@ import android.widget.TextView;
 import com.rey.material.widget.ProgressView;
 
 import java.util.ArrayList;
+
+import ru.mipt.feofanova.foodapp.HttpGetRequestTask;
+import ru.mipt.feofanova.foodapp.R;
+import ru.mipt.feofanova.foodapp.RequestUrlCreator;
 
 import static ru.mipt.feofanova.foodapp.NavigationActivity.fragment;
 import static ru.mipt.feofanova.foodapp.NavigationActivity.mFragmentManager;
@@ -63,15 +66,14 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
         //mActivity.setContentView(R.layout.fragment_ingredients_input);
         //req.delegate = this;
         basicUrl = "";
-        mEditText = (EditText) mActivity.findViewById(R.id.edit_text);
-        mRecyclerView = (RecyclerView) mActivity.findViewById(R.id.recipes_recycler_view);
-        mProgressView = (ProgressView) mActivity.findViewById(R.id.ingredients_progress_view);
+        mEditText = mActivity.findViewById(R.id.edit_text);
+        mRecyclerView = mActivity.findViewById(R.id.recipes_recycler_view);
+        mProgressView = mActivity.findViewById(R.id.ingredients_progress_view);
         mFindButton = mActivity.findViewById(R.id.find_button);
         mRecyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(mActivity);
         mRecyclerView.setLayoutManager(mLayoutManager);
-
 
         mAdapter = new mAdapter(mActivity,
                 R.layout.ingredient_button, ingredients);
@@ -110,19 +112,6 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
                 req.execute();
             }
         });
-
-        mFindButton.setOnLongClickListener( new View.OnLongClickListener()
-                                            {
-                                                @Override
-                                                public boolean onLongClick(View v)
-                                                {
-                                                    Intent intent = new Intent(mActivity, FavoriteFragment.class);
-                                                    startActivity(intent);
-                                                    return true;
-                                                }
-                                            }
-
-        );
     }
 
     @Override
@@ -130,22 +119,11 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
     {
         reqBody = res;
         //Log.e("REQBODY", reqBody);
-        /*Intent data = new Intent(mActivity, MealsListFragment.class);
-        data.putExtra("reqBody", reqBody);
-        data.putExtra("basicUrl", basicUrl);
-        mActivity.setResult(RESULT_OK, data);
-        startActivity(data);*/
 
         //MealsListFragment fragment = (MealsListFragment) mFragmentManager
         //        .findFragmentByTag(TAG_1);
         //Fragment fragment = null;
-        try {
-            fragment = MealsListFragment.class.newInstance();
-        } catch (java.lang.InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        fragment = new MealsListFragment();
         Bundle bundle = new Bundle();
         bundle.putString("reqBody", reqBody);
         bundle.putString("basicUrl", basicUrl);

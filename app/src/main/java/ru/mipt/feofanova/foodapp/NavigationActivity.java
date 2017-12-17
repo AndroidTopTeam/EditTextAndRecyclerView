@@ -14,6 +14,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import ru.mipt.feofanova.foodapp.fragments.FavoriteFragment;
+import ru.mipt.feofanova.foodapp.fragments.IngredientsInputFragment;
+import ru.mipt.feofanova.foodapp.fragments.PropertiesFragment;
+
 public class NavigationActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private Toolbar toolbar;
@@ -55,14 +59,14 @@ public class NavigationActivity extends AppCompatActivity {
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());*/
 
         // Установить Toolbar для замены ActionBar'а.
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         toolbar.setNavigationIcon(R.drawable.hamburger_icon);
         setSupportActionBar(toolbar);
 
         // Найти наш view drawer'а
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
         // Найти наш view drawer'а
-        nvDrawer = (NavigationView) findViewById(R.id.navigation);
+        nvDrawer = findViewById(R.id.navigation);
 
         // Настроить view drawer'а
         setupDrawerContent(nvDrawer);
@@ -71,7 +75,6 @@ public class NavigationActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                // Code here will be triggered once the drawer closes as we dont want anything to happen so we leave this blank
                 super.onDrawerClosed(drawerView);
                 InputMethodManager inputMethodManager = (InputMethodManager)
                         getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -80,17 +83,13 @@ public class NavigationActivity extends AppCompatActivity {
 
             @Override
             public void onDrawerOpened(View drawerView) {
-                // Code here will be triggered once the drawer open as we dont want anything to happen so we leave this blank
                 super.onDrawerOpened(drawerView);
                 InputMethodManager inputMethodManager = (InputMethodManager)
                         getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
             }
         };
-        //Setting the actionbarToggle to drawer layout
         mDrawerLayout.addDrawerListener(actionBarDrawerToggle);
-
-        //calling sync state is necessay or else your hamburger icon wont show up
         actionBarDrawerToggle.syncState();
 
         mFragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
@@ -145,13 +144,13 @@ public class NavigationActivity extends AppCompatActivity {
                 fragmentClass = FavoriteFragment.class;
                 break;
             case R.id.properties_fragment:
-                fragmentClass = ScreenOne.class;
+                fragmentClass = PropertiesFragment.class;
                 break;
             case R.id.search_fragment:
                 fragmentClass = IngredientsInputFragment.class;
                 break;
             default:
-                fragmentClass = ScreenOne.class;
+                fragmentClass = PropertiesFragment.class;
         }
 
         try {
