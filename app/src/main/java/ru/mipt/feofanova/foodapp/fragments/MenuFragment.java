@@ -1,6 +1,5 @@
-package ru.mipt.feofanova.foodapp;
+package ru.mipt.feofanova.foodapp.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -16,8 +15,15 @@ import android.widget.TextView;
 import java.util.Calendar;
 import android.support.design.widget.FloatingActionButton;
 
+import ru.mipt.feofanova.foodapp.DBHelper;
+import ru.mipt.feofanova.foodapp.FavouriteButtonColorChangerTask;
+import ru.mipt.feofanova.foodapp.GsonMealObject;
+import ru.mipt.feofanova.foodapp.ImageDownloaderTask;
+import ru.mipt.feofanova.foodapp.R;
+import ru.mipt.feofanova.foodapp.Singleton;
 
-public class MenuActivity extends Fragment implements ImageDownloaderTask.IImageResponseListener, FavouriteButtonColorChangerTask.ColorChangerResponseListener
+
+public class MenuFragment extends Fragment implements ImageDownloaderTask.IImageResponseListener, FavouriteButtonColorChangerTask.ColorChangerResponseListener
 {
     TextView mTitleTextView;
     ImageView mMealPhoto;
@@ -58,7 +64,7 @@ public class MenuActivity extends Fragment implements ImageDownloaderTask.IImage
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.activity_menu, container,
+        View rootView = inflater.inflate(R.layout.activity_fragment, container,
                 false);
 
         return rootView;
@@ -70,16 +76,15 @@ public class MenuActivity extends Fragment implements ImageDownloaderTask.IImage
         super.onActivityCreated(savedInstanceState);
         mActivity = (AppCompatActivity) getActivity();
 
-        mTitleTextView = (TextView) mActivity.findViewById(R.id.recipe_title);
-        mMealPhoto = (ImageView) mActivity.findViewById(R.id.recipe_menu_image);
-        mIngredientsTitleTextView = (TextView) mActivity.findViewById(R.id.ingredients_string);
-        mIngredientsList = (TextView) mActivity.findViewById(R.id.ingredients_list);
-        mRecipeTextView = (TextView) mActivity.findViewById(R.id.recipe_string);
-        mRecipeDescriptionTextView = (TextView) mActivity.findViewById(R.id.recipe_description);
+        mTitleTextView = mActivity.findViewById(R.id.recipe_title);
+        mMealPhoto = mActivity.findViewById(R.id.recipe_menu_image);
+        mIngredientsTitleTextView = mActivity.findViewById(R.id.ingredients_string);
+        mIngredientsList = mActivity.findViewById(R.id.ingredients_list);
+        mRecipeTextView = mActivity.findViewById(R.id.recipe_string);
+        mRecipeDescriptionTextView = mActivity.findViewById(R.id.recipe_description);
 
         mDBHelper = new DBHelper(mActivity);
 
-        //int index = getIntent().getIntExtra("currentMealIndex", 0);
         Bundle bundle = getArguments();
         int index = 0;
         if (bundle != null) {
@@ -96,7 +101,7 @@ public class MenuActivity extends Fragment implements ImageDownloaderTask.IImage
         mRecipeDescriptionTextView.setHighlightColor(Color.BLUE);
 
         imgResponseTask = new ImageDownloaderTask(currentMeal.getThumbnail(), mMealPhoto);
-        imgResponseTask.delegate = MenuActivity.this;
+        imgResponseTask.delegate = MenuFragment.this;
         imgResponseTask.execute();
 
 
@@ -112,10 +117,10 @@ public class MenuActivity extends Fragment implements ImageDownloaderTask.IImage
 
 
 
-        mFloatingActionButton = (FloatingActionButton) mActivity.findViewById(R.id.fab);
+        mFloatingActionButton = mActivity.findViewById(R.id.fab);
         //TODO: here is the checking for favourite dish, change the pic on onResponse(bool)
         FavouriteButtonColorChangerTask favouriteButtonColorChangerTask = new FavouriteButtonColorChangerTask(currentMeal.getTitle(), null, mActivity);
-        favouriteButtonColorChangerTask.delegate = MenuActivity.this;
+        favouriteButtonColorChangerTask.delegate = MenuFragment.this;
         favouriteButtonColorChangerTask.execute();
 
         mFloatingActionButton.setOnClickListener(new View.OnClickListener()

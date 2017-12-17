@@ -12,7 +12,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-import static ru.mipt.feofanova.foodapp.IngredientsInputFragment.enableDisableViewGroup;
+import static ru.mipt.feofanova.foodapp.fragments.IngredientsInputFragment.enableDisableViewGroup;
 
 /**
  * Created by Талгат on 25.10.2017.
