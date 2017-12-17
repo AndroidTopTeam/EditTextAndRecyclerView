@@ -23,6 +23,7 @@ import com.google.gson.Gson;
 import com.rey.material.widget.ProgressView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ru.mipt.feofanova.foodapp.GsonMealObject;
@@ -80,8 +81,8 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
         }
 
         if (savedInstanceState == null) {
-            parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
             if (mDataSet1.isEmpty()) {
+                parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
                 for (GsonMealObject i : parsedJson) {
                     mDataSet1.add(i.getTitle());
                     mUrlsSet1.add(i.getThumbnail());
@@ -92,6 +93,7 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
             mUrlsSet1.addAll(0, savedInstanceState.getStringArrayList(PICTURE_URLS_KEY_));
             basicUrl = savedInstanceState.getString("basicUrl");
             reqBody = savedInstanceState.getString("reqBody");
+            parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
         }
     }
 
@@ -127,8 +129,6 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
             @Override
             public void onClick(View view)
             {
-                //clear mDataSet1
-                //add to mDataSet1 and mUrlsSet1 new items
                 mDataSet1.clear();
                 mUrlsSet1.clear();
                 RequestUrlCreator creator = new RequestUrlCreator();
@@ -156,12 +156,10 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
             @Override
             public void onClick(View view)
             {
-                //clear mDataSet1
-                //add to mDataSet1 and mUrlsSet1 new items
                 mDataSet1.clear();
                 mUrlsSet1.clear();
-                RequestUrlCreator creator = new RequestUrlCreator();
 
+                RequestUrlCreator creator = new RequestUrlCreator();
                 Log.e("", "---------------------------------------------------------------");
 
                 Log.e("----------------BSICURL", basicUrl);
@@ -170,6 +168,8 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
                 newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) mActivity.findViewById(R.id.recipes_recycler_view));
                 newMealsTask.delegate = MealsListFragment.this;
                 newMealsTask.execute();
+
+
                 //mRecyclerView.updateViewLayout(view);
                 //  mRecyclerView.invalidate();
 
@@ -177,7 +177,6 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
                 //String url = creator.makeRequestString();
                 //HttpGetRequestTask req = new HttpGetRequestTask();
                 //mRecyclerView.updateViewLayout();
-                mRecipesAdapter.notifyDataSetChanged();
 
             }
         });
@@ -198,15 +197,12 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
         if (reqBody != "404")
         {
             parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
-            mDataSet1.clear();
-            mUrlsSet1.clear();
 
             for (GsonMealObject i : parsedJson)
             {
                 mDataSet1.add(i.getTitle());
                 mUrlsSet1.add(i.getThumbnail());
             }
-
             mRecipesAdapter.notifyDataSetChanged();
         }
     }
@@ -274,25 +270,6 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
             imgResponseTask.delegate = MealsListFragment.this;
             mImage = holder.mImageView;
             imgResponseTask.execute();
-
-            /*holder.mCardView.setOnClickListener(new View.OnClickListener()
-            {
-                @Override
-                public void onClick(View view)
-                {
-                    Singleton.setParsedJsonResp(parsedJson);
-
-                    fragment = new MenuFragment();
-                    Bundle bundle = new Bundle();
-                    bundle.putInt("currentMealIndex", holder.getAdapterPosition());
-                    fragment.setArguments(bundle);
-
-                    mFragmentManager = getFragmentManager();
-                    FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.flContent, fragment);
-                    fragmentTransaction.addToBackStack(null).commit();
-                }
-            });*/
         }
         public int getItemCount()
         {
