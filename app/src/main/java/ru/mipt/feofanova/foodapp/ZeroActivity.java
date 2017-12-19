@@ -21,6 +21,7 @@ public class ZeroActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_greeting);
+
     }
 
     @Override
