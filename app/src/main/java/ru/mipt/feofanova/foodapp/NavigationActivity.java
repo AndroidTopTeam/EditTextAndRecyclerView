@@ -19,13 +19,10 @@ import ru.mipt.feofanova.foodapp.fragments.IngredientsInputFragment;
 import ru.mipt.feofanova.foodapp.fragments.PropertiesFragment;
 
 public class NavigationActivity extends AppCompatActivity {
-    private DrawerLayout mDrawerLayout;
+    private DrawerLayout drawerLayout;
     private Toolbar toolbar;
-    private NavigationView nvDrawer;
+    private NavigationView navigationDrawer;
 
-    private ActionBarDrawerToggle mDrawerToggle;
-    private CharSequence mDrawerTitle;
-    private CharSequence mTitle;
     public static Fragment fragment;
     public static FragmentManager mFragmentManager;
 
@@ -34,7 +31,6 @@ public class NavigationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_navigation);
 
-        mTitle = mDrawerTitle = getTitle();
         mFragmentManager = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
@@ -43,35 +39,21 @@ public class NavigationActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            // Вставить фрагмент, заменяя любой существующий
+
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.flContent, fragment).commit();
+            fragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit();
         }
 
-        /*mPlanetTitles = getResources().getStringArray(R.array.planets_array);
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mPlanetTitles));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());*/
-
-        // Установить Toolbar для замены ActionBar'а.
         toolbar = findViewById(R.id.toolbar);
-        toolbar.setNavigationIcon(R.drawable.hamburger_icon);
+        toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
-        // Найти наш view drawer'а
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-        // Найти наш view drawer'а
-        nvDrawer = findViewById(R.id.navigation);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        navigationDrawer = findViewById(R.id.navigation_view);
 
-        // Настроить view drawer'а
-        setupDrawerContent(nvDrawer);
+        setupDrawerContent(navigationDrawer);
 
-        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.app_name, R.string.app_name) {
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.app_name) {
 
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -89,20 +71,19 @@ public class NavigationActivity extends AppCompatActivity {
                 inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
             }
         };
-        mDrawerLayout.addDrawerListener(actionBarDrawerToggle);
+        drawerLayout.addDrawerListener(actionBarDrawerToggle);
         actionBarDrawerToggle.syncState();
 
         mFragmentManager.addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                fragment = mFragmentManager.findFragmentById(R.id.flContent);
+                fragment = mFragmentManager.findFragmentById(R.id.main_content);
             }
         });
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Действие home/up action bar'а должно открывать или закрывать drawer.
         switch (item.getItemId()) {
             case android.R.id.home:
                 InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -111,12 +92,7 @@ public class NavigationActivity extends AppCompatActivity {
                     inputMethodManager.showSoftInput(view,InputMethodManager.SHOW_FORCED);
                     inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
-                mDrawerLayout.openDrawer(GravityCompat.START);
-                /*View view = findViewById(R.id.drawer_layout);
-                if (view != null) {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                }*/
+                drawerLayout.openDrawer(GravityCompat.START);
                 return true;
         }
 
@@ -135,8 +111,6 @@ public class NavigationActivity extends AppCompatActivity {
     }
 
     public void selectDrawerItem(MenuItem menuItem) {
-        // Создать новый фрагмент и задать фрагмент для отображения
-        // на основе нажатия на элемент навигации
         fragment = null;
         Class fragmentClass;
         switch(menuItem.getItemId()) {
@@ -150,7 +124,7 @@ public class NavigationActivity extends AppCompatActivity {
                 fragmentClass = IngredientsInputFragment.class;
                 break;
             default:
-                fragmentClass = PropertiesFragment.class;
+                fragmentClass = IngredientsInputFragment.class;
         }
 
         try {
@@ -159,43 +133,10 @@ public class NavigationActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        // Вставить фрагмент, заменяя любой существующий
-        mFragmentManager.beginTransaction().replace(R.id.flContent, fragment).addToBackStack(null).commit();
+        mFragmentManager.beginTransaction().replace(R.id.main_content, fragment).addToBackStack(null).commit();
 
-        // Выделение существующего элемента выполнено с помощью
-        // NavigationView
         menuItem.setChecked(true);
-
-        // Установить заголовок для action bar'а
-        setTitle(menuItem.getTitle());
-
-        // Закрыть navigation drawer
-        mDrawerLayout.closeDrawers();
-    }
-
-    //переменная хранящая позицию текущего отображаемого фрагмента. Изначально - 0
-//т.е. первый фрагмент. При замене фрагментов надо менять это число
-//не забываем сохранять это значение при пересоздании активити
-    int currentPositionOfFragment = 0;
-
-    @Override
-    public void onBackPressed()
-    {
-        if (currentPositionOfFragment != 0)
-        {
-            mFragmentManager.popBackStack();
-            /*int index = getFragmentManager().getBackStackEntryCount() - 1;
-            FragmentManager.BackStackEntry backEntry = getSupportFragmentManager().getBackStackEntryAt(index);
-            String tag = backEntry.getName();
-            fragment = getSupportFragmentManager().findFragmentByTag(tag);*/
-            fragment = mFragmentManager.findFragmentById(R.id.flContent);
-            //отображается не первый фрагмент, значит отображаем его
-        }
-        else
-        {
-            //отображается первый фрагмент, значит выходим из приложения
-            super.onBackPressed();
-        }
+        drawerLayout.closeDrawers();
     }
 
     public void onSaveInstanceState(Bundle outState){
