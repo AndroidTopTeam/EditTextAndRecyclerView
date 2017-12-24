@@ -36,8 +36,7 @@ import ru.mipt.feofanova.foodapp.Singleton;
 import static ru.mipt.feofanova.foodapp.NavigationActivity.fragment;
 import static ru.mipt.feofanova.foodapp.NavigationActivity.mFragmentManager;
 
-public class MealsListFragment extends Fragment implements ImageDownloaderTask.IImageResponseListener, HttpGetRequestTask.IResponseListener
-{
+public class MealsListFragment extends Fragment implements ImageDownloaderTask.IImageResponseListener, HttpGetRequestTask.IResponseListener {
 
     private static final String RECIPY_NAMES_KEY_ = "RECYPIES";
     private static final String PICTURE_URLS_KEY_ = "PICTURE_URLS";
@@ -69,6 +68,7 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
         return rootView;
     }
 
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -77,11 +77,18 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
         if (bundle != null && basicUrl == null && reqBody == null) {
             basicUrl = bundle.getString("basicUrl");
             reqBody = bundle.getString("reqBody");
+
         }
 
         if (savedInstanceState == null) {
             if (mDataSet1.isEmpty()) {
-                parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
+                try {
+                    Log.e("REQBODY", reqBody);
+                    if (reqBody.length() > 0)
+                        parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
+                } catch (Exception e) {
+                    Log.e("Gson err, empy list", e.getMessage());
+                }
                 for (GsonMealObject i : parsedJson) {
                     mDataSet1.add(i.getTitle());
                     mUrlsSet1.add(i.getThumbnail());
@@ -92,18 +99,23 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
             mUrlsSet1.addAll(0, savedInstanceState.getStringArrayList(PICTURE_URLS_KEY_));
             basicUrl = savedInstanceState.getString("basicUrl");
             reqBody = savedInstanceState.getString("reqBody");
-            parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
+            try {
+                parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
+            }
+            catch(Exception e)
+            {
+                Log.e("Err gson, empty json", e.getMessage());
+            }
         }
     }
 
     @Override
-    public void onStart()
-    {
+    public void onStart() {
         super.onStart();
 
         View view = mActivity.getCurrentFocus();
         if (view != null) {
-            InputMethodManager imm = (InputMethodManager)mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
 
@@ -123,82 +135,82 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
 
         prev = mActivity.findViewById(R.id.prev_button);
         next = mActivity.findViewById(R.id.next_button);
-        prev.setOnClickListener(new View.OnClickListener()
-        {
+        prev.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 mDataSet1.clear();
                 mUrlsSet1.clear();
-                RequestUrlCreator creator = new RequestUrlCreator();
-                Log.e("", "---------------------------------------------------------------");
+                try {
+                    RequestUrlCreator creator = new RequestUrlCreator();
+                    Log.e("", "---------------------------------------------------------------");
 
-                Log.e("----------------BSICURL", basicUrl);
-                basicUrl = creator.changePage(basicUrl, -1);
-                Log.e("----------------BSICURL", basicUrl);
-                newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) mActivity.findViewById(R.id.recipes_recycler_view));
-                newMealsTask.delegate = MealsListFragment.this;
-                newMealsTask.execute();
-                //mRecyclerView.updateViewLayout(view);
-                //  mRecyclerView.invalidate();
-
-                //RequestUrlCreator creator = new RequestUrlCreator(parsedJson.get(0).getIngredients(), null, new ArrayList<String>().add("2"));
-                //String url = creator.makeRequestString();
-                //HttpGetRequestTask req = new HttpGetRequestTask();
-                //mRecyclerView.updateViewLayout();
+                    Log.e("----------------BSICURL", basicUrl);
+                    basicUrl = creator.changePage(basicUrl, -1);
+                    Log.e("----------------BSICURL", basicUrl);
+                    newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) mActivity.findViewById(R.id.recipes_recycler_view));
+                    newMealsTask.delegate = MealsListFragment.this;
+                    newMealsTask.execute();
+                } catch (Exception e) {
+                    Log.e("Error", e.getMessage());
+                }
                 mRecipesAdapter.notifyDataSetChanged();
             }
         });
 
-        next.setOnClickListener(new View.OnClickListener()
-        {
+        next.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 mDataSet1.clear();
                 mUrlsSet1.clear();
+                try {
+                    RequestUrlCreator creator = new RequestUrlCreator();
+                    Log.e("", "---------------------------------------------------------------");
 
-                RequestUrlCreator creator = new RequestUrlCreator();
-                Log.e("", "---------------------------------------------------------------");
-
-                Log.e("----------------BSICURL", basicUrl);
-                basicUrl = creator.changePage(basicUrl, +1);
-                Log.e("----------------BSICURL", basicUrl);
-                newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) mActivity.findViewById(R.id.recipes_recycler_view));
-                newMealsTask.delegate = MealsListFragment.this;
-                newMealsTask.execute();
-
-
-                //mRecyclerView.updateViewLayout(view);
-                //  mRecyclerView.invalidate();
-
-                //RequestUrlCreator creator = new RequestUrlCreator(parsedJson.get(0).getIngredients(), null, new ArrayList<String>().add("2"));
-                //String url = creator.makeRequestString();
-                //HttpGetRequestTask req = new HttpGetRequestTask();
-                //mRecyclerView.updateViewLayout();
+                    Log.e("----------------BSICURL", basicUrl);
+                    basicUrl = creator.changePage(basicUrl, +1);
+                    Log.e("----------------BSICURL", basicUrl);
+                    newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) mActivity.findViewById(R.id.recipes_recycler_view));
+                    newMealsTask.delegate = MealsListFragment.this;
+                    try {
+                        newMealsTask.execute();
+                    } catch (Exception e) {
+                        Log.e("ErrorRequest", e.getMessage());
+                    }
+                } catch (Exception e) {
+                    Log.e("Error", e.getMessage());
+                }
+                mRecipesAdapter.notifyDataSetChanged();
 
             }
         });
 
     }
-
+/*
+    @Override
+    public void onPause()
+    {
+        super.onPause();
+        mRecipesAdapter.notifyDataSetChanged();
+    }
+*/
 
     @Override
-    public void onResponse(Bitmap img, ImageView currentImage)
-    {
+    public void onResponse(Bitmap img, ImageView currentImage) {
         currentImage.setImageBitmap(img);
     }
 
     @Override
-    public void onResponse(String res)
-    {
+    public void onResponse(String res) {
         reqBody = res;
-        if (reqBody != "404")
-        {
-            parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
-
-            for (GsonMealObject i : parsedJson)
+        if (reqBody != "404") {
+            try {
+                parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
+            }
+            catch(Exception e)
             {
+                Log.e("Err gson, empty json", e.getMessage());
+            }
+            for (GsonMealObject i : parsedJson) {
                 mDataSet1.add(i.getTitle());
                 mUrlsSet1.add(i.getThumbnail());
             }
@@ -206,19 +218,16 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
         }
     }
 
-    public class mAdapter extends RecyclerView.Adapter<mAdapter.ViewHolder>
-    {
+    public class mAdapter extends RecyclerView.Adapter<mAdapter.ViewHolder> {
         private ArrayList<String> mDataSet;
         private ArrayList<String> mUrlsSet;
 
-        class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener
-        {
+        class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
             CardView mCardView;
             ImageView mImageView;
             TextView mTextView;
 
-            public ViewHolder(View view)
-            {
+            public ViewHolder(View view) {
                 super(view);
                 mCardView = view.findViewById(R.id.recipe_card_view);
                 mImageView = view.findViewById(R.id.recipe_card_view_image);
@@ -242,16 +251,14 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
             }
         }
 
-        public mAdapter(ArrayList<String> inputDataDet, ArrayList<String> urls)
-        {
+        public mAdapter(ArrayList<String> inputDataDet, ArrayList<String> urls) {
             mDataSet = inputDataDet;
             mUrlsSet = urls;
         }
 
         @Override
         public mAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                      int viewType)
-        {
+                                                      int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.recipe_card_view, parent, false);
 
@@ -259,8 +266,7 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position)
-        {
+        public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mTextView.setText(mDataSet.get(position));
             String url = mUrlsSet.get(position);
             holder.mImageView.setImageResource(R.drawable.placeholder); //заглушка
@@ -270,15 +276,14 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
             mImage = holder.mImageView;
             imgResponseTask.execute();
         }
-        public int getItemCount()
-        {
+
+        public int getItemCount() {
             return mDataSet.size();
         }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState)
-    {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putStringArrayList(RECIPY_NAMES_KEY_, mDataSet1);

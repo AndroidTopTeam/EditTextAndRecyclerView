@@ -1,18 +1,10 @@
 package ru.mipt.feofanova.foodapp;
 
-/**
- * Created by Талгат on 25.10.2017.
- */
 
 import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.internal.Internal;
-
-/**
- * Created by Талгат on 25.10.2017.
- */
-
 
 public class RequestUrlCreator
 {

@@ -125,7 +125,6 @@ public class DBHelper extends SQLiteOpenHelper
             contentValues.put("imageHref", imageHref);
             db.insert("favourites", null, contentValues);
             db.close();
-
             //ImageExternalStorageSaver saver = new ImageExternalStorageSaver(path, img);
             //saver.save();
         }
@@ -197,6 +196,20 @@ public class DBHelper extends SQLiteOpenHelper
             if (db != null)
             {
                 db.delete("favourites", "id=?", new String[]{String.valueOf(size)});
+                db.close();
+            }
+        }
+    }
+
+    public void removeAt(int index)
+    {
+        int size = getCount();
+        if (size > 0)
+        {
+            SQLiteDatabase db = getWritableDatabase();
+            if (db != null)
+            {
+                db.delete("favourites", "id=?", new String[]{String.valueOf(index)});
                 db.close();
             }
         }

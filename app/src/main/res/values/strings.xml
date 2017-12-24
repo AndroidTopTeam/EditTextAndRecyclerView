@@ -18,6 +18,7 @@
     <string name="already_in_favorite">This recipe has already been added to your favorites!</string>
     <string name="add_in_favorite">This recipe is now in your favorites!</string>
     <string name="cancel">cancel</string>
+    <string name="removed">Removed</string>
 
 </resources>
 

@@ -25,8 +25,7 @@ import ru.mipt.feofanova.foodapp.Singleton;
 import static ru.mipt.feofanova.foodapp.NavigationActivity.fragment;
 import static ru.mipt.feofanova.foodapp.NavigationActivity.mFragmentManager;
 
-public class FavoriteFragment extends Fragment implements ImageDownloaderTask.IImageResponseListener
-{
+public class FavoriteFragment extends Fragment implements ImageDownloaderTask.IImageResponseListener {
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mRecipesAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -51,14 +50,21 @@ public class FavoriteFragment extends Fragment implements ImageDownloaderTask.II
         parsedJson = new ArrayList<>();
         mDBHelper = new DBHelper(getActivity());
         int numFavourite = mDBHelper.getCount();
+
+        /*while ((numFavourite--) > 0)
+            mDBHelper.removeLast();*/
         ArrayList<String> favorites;
-            for (int i = 0; i < numFavourite; ++i) {
-                favorites = mDBHelper.getValues(i + 1);
+
+        for (int i = 0; i < numFavourite; ++i) {
+            favorites = mDBHelper.getValues(i + 1);
+            if (favorites.get(0).length() > 0) {
                 GsonMealObject temp = new GsonMealObject(favorites.get(0), favorites.get(2), favorites.get(1), favorites.get(4));
                 parsedJson.add(temp);
                 mDataSet.add(favorites.get(0));
                 mUrlsSet.add(favorites.get(4));
+
             }
+        }
     }
 
     @Override
@@ -73,24 +79,20 @@ public class FavoriteFragment extends Fragment implements ImageDownloaderTask.II
     }
 
     @Override
-    public void onResponse(Bitmap img, ImageView currentImage)
-    {
+    public void onResponse(Bitmap img, ImageView currentImage) {
         currentImage.setImageBitmap(img);
     }
 
-    public class mAdapter extends RecyclerView.Adapter<mAdapter.ViewHolder>
-    {
+    public class mAdapter extends RecyclerView.Adapter<mAdapter.ViewHolder> {
         private ArrayList<String> mDataSet;
         private ArrayList<String> mUrlsSet;
 
-        class ViewHolder extends RecyclerView.ViewHolder
-        {
+        class ViewHolder extends RecyclerView.ViewHolder {
             CardView mCardView;
             ImageView mImageView;
             TextView mTextView;
 
-            public ViewHolder(View view)
-            {
+            public ViewHolder(View view) {
                 super(view);
                 mCardView = view.findViewById(R.id.recipe_card_view);
                 mImageView = view.findViewById(R.id.recipe_card_view_image);
@@ -98,16 +100,14 @@ public class FavoriteFragment extends Fragment implements ImageDownloaderTask.II
             }
         }
 
-        public mAdapter(ArrayList<String> inputDataDet, ArrayList<String> urls)
-        {
+        public mAdapter(ArrayList<String> inputDataDet, ArrayList<String> urls) {
             mDataSet = inputDataDet;
             mUrlsSet = urls;
         }
 
         @Override
         public mAdapter.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                      int viewType)
-        {
+                                                      int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.recipe_card_view, parent, false);
 
@@ -115,8 +115,7 @@ public class FavoriteFragment extends Fragment implements ImageDownloaderTask.II
         }
 
         @Override
-        public void onBindViewHolder(final mAdapter.ViewHolder holder, int position)
-        {
+        public void onBindViewHolder(final mAdapter.ViewHolder holder, int position) {
             holder.mTextView.setText(mDataSet.get(position));
             String url = mUrlsSet.get(position);
             holder.mImageView.setImageResource(R.drawable.placeholder); //заглушка
@@ -126,11 +125,9 @@ public class FavoriteFragment extends Fragment implements ImageDownloaderTask.II
             imgResponseTask.execute();
 
 
-            holder.mCardView.setOnClickListener(new View.OnClickListener()
-            {
+            holder.mCardView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view)
-                {
+                public void onClick(View view) {
                     Singleton.setParsedJsonResp(parsedJson);
                     fragment = new MenuFragment();
                     Bundle bundle = new Bundle();
@@ -143,8 +140,8 @@ public class FavoriteFragment extends Fragment implements ImageDownloaderTask.II
                 }
             });
         }
-        public int getItemCount()
-        {
+
+        public int getItemCount() {
             return mDataSet.size();
         }
     }

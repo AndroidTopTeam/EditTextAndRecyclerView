@@ -12,11 +12,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import java.util.Calendar;
+
 import android.support.design.widget.FloatingActionButton;
 import android.widget.Toast;
 
 import ru.mipt.feofanova.foodapp.DBHelper;
+import ru.mipt.feofanova.foodapp.DBHelperRemoveAtTask;
 import ru.mipt.feofanova.foodapp.FavouriteButtonColorChangerTask;
 import ru.mipt.feofanova.foodapp.GsonMealObject;
 import ru.mipt.feofanova.foodapp.ImageDownloaderTask;
@@ -24,8 +27,7 @@ import ru.mipt.feofanova.foodapp.R;
 import ru.mipt.feofanova.foodapp.Singleton;
 
 
-public class MenuFragment extends Fragment implements ImageDownloaderTask.IImageResponseListener, FavouriteButtonColorChangerTask.ColorChangerResponseListener
-{
+public class MenuFragment extends Fragment implements ImageDownloaderTask.IImageResponseListener, FavouriteButtonColorChangerTask.ColorChangerResponseListener {
     TextView mTitleTextView;
     ImageView mMealPhoto;
     TextView mIngredientsTitleTextView;
@@ -41,18 +43,15 @@ public class MenuFragment extends Fragment implements ImageDownloaderTask.IImage
     AppCompatActivity mActivity;
 
     @Override
-    public void onResponse(Bitmap img, ImageView currentImage)
-    {
+    public void onResponse(Bitmap img, ImageView currentImage) {
         //currentImage.setImageBitmap(img);
         currentImage.setImageBitmap(img);
         mCurrentDishPhoto = img;
     }
 
     @Override
-    public void onResponse(Boolean res)
-    {
-        if (res)
-        {
+    public void onResponse(Boolean res) {
+        if (res) {
             //TODO: change for normal pic and debug this (it isnt working now)
             mFloatingActionButton.setBackgroundColor(Color.BLACK);
             mFloatingActionButton.setImageResource(R.drawable.star);
@@ -72,8 +71,7 @@ public class MenuFragment extends Fragment implements ImageDownloaderTask.IImage
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState)
-    {
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mActivity = (AppCompatActivity) getActivity();
 
@@ -106,52 +104,55 @@ public class MenuFragment extends Fragment implements ImageDownloaderTask.IImage
         imgResponseTask.execute();
 
 
-        mRecipeDescriptionTextView.setOnClickListener(new View.OnClickListener()
-                                                      {
+        mRecipeDescriptionTextView.setOnClickListener(new View.OnClickListener() {
                                                           @Override
-                                                          public void onClick(View view)
-                                                          {
+                                                          public void onClick(View view) {
                                                               startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(currentMeal.getHref())));
                                                           }
                                                       }
         );
 
 
-
         mFloatingActionButton = mActivity.findViewById(R.id.fab);
         //TODO: here is the checking for favourite dish, change the pic on onResponse(bool)
-        FavouriteButtonColorChangerTask favouriteButtonColorChangerTask = new FavouriteButtonColorChangerTask(currentMeal.getTitle(), null, mActivity);
+        FavouriteButtonColorChangerTask favouriteButtonColorChangerTask = new
+                FavouriteButtonColorChangerTask(currentMeal.getTitle(), null, mActivity);
         favouriteButtonColorChangerTask.delegate = MenuFragment.this;
         favouriteButtonColorChangerTask.execute();
 
-        mFloatingActionButton.setOnClickListener(new View.OnClickListener()
-        {
+        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 //save in favorites
-                if (!isInFavourite)
-                {
+                if (!isInFavourite) {
                     mFloatingActionButton.setImageResource(R.drawable.star);
-                    mDBHelper.addValue(currentMeal.getTitle(), currentMeal.getIngredients(),
+
+                    DBHelperAddTask adder = new DBHelperAddTask(mActivity, currentMeal.getTitle(), currentMeal.getIngredients(),
                             currentMeal.getHref(),
                             Calendar.getInstance().get(Calendar.DST_OFFSET) + "" +
                                     Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + "",
                             currentMeal.getThumbnail(),
                             mCurrentDishPhoto);
-
+                    adder.execute();
                     Toast toast = Toast.makeText(mActivity.getApplicationContext(),
                             R.string.add_in_favorite, Toast.LENGTH_SHORT);
+                    isInFavourite = true;
                     toast.show();
-                }
-                else
-                {
+                } else {
+                    mFloatingActionButton.setImageResource(R.drawable.star_grey);
+
+                    //onions
+                    //mDBHelper.removeAt(mDBHelper.countValue(currentMeal.getTitle()));
+                    DBHelperRemoveAtTask remover = new DBHelperRemoveAtTask(mActivity, currentMeal.getTitle());
+                    remover.execute();
+                    isInFavourite = false;
+
                     Toast toast = Toast.makeText(mActivity.getApplicationContext(),
-                            R.string.already_in_favorite, Toast.LENGTH_SHORT);
+                            R.string.removed, Toast.LENGTH_SHORT);
                     toast.show();
+
                     //TODO: Message with text "already in favourite" (action bar all smth like that, Idont know)
                 }
-
 
 
             }
