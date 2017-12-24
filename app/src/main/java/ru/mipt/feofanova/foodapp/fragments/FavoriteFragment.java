@@ -10,18 +10,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.rey.material.widget.ProgressView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ru.mipt.feofanova.foodapp.DBHelper;
 import ru.mipt.feofanova.foodapp.GsonMealObject;
-import ru.mipt.feofanova.foodapp.HttpGetRequestTask;
 import ru.mipt.feofanova.foodapp.ImageDownloaderTask;
 import ru.mipt.feofanova.foodapp.R;
 import ru.mipt.feofanova.foodapp.Singleton;
@@ -142,7 +138,7 @@ public class FavoriteFragment extends Fragment implements ImageDownloaderTask.II
                     fragment.setArguments(bundle);
 
                     FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                    fragmentTransaction.replace(R.id.flContent, fragment);
+                    fragmentTransaction.replace(R.id.main_content, fragment);
                     fragmentTransaction.addToBackStack(null).commit();
                 }
             });

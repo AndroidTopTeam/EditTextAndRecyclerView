@@ -18,14 +18,9 @@
         <activity android:name=".ZeroActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".fragments.MealsListFragment" />
-        <activity android:name=".fragments.MenuFragment" />
-        <activity android:name=".fragments.IngredientsInputFragment" />
-        <activity android:name=".fragments.FavoriteFragment" />
         <activity android:name=".NavigationActivity"></activity>
     </application>
 

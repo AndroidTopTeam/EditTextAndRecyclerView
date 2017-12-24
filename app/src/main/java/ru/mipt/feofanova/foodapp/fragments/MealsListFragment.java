@@ -23,7 +23,6 @@ import com.google.gson.Gson;
 import com.rey.material.widget.ProgressView;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import ru.mipt.feofanova.foodapp.GsonMealObject;
@@ -238,7 +237,7 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
 
                 mFragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.flContent, fragment);
+                fragmentTransaction.replace(R.id.main_content, fragment);
                 fragmentTransaction.addToBackStack(null).commit();
             }
         }

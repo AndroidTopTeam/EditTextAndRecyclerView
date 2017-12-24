@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.Calendar;
 import android.support.design.widget.FloatingActionButton;
+import android.widget.Toast;
 
 import ru.mipt.feofanova.foodapp.DBHelper;
 import ru.mipt.feofanova.foodapp.FavouriteButtonColorChangerTask;
@@ -64,7 +65,7 @@ public class MenuFragment extends Fragment implements ImageDownloaderTask.IImage
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.activity_fragment, container,
+        View rootView = inflater.inflate(R.layout.fragment_menu, container,
                 false);
 
         return rootView;
@@ -139,10 +140,15 @@ public class MenuFragment extends Fragment implements ImageDownloaderTask.IImage
                             currentMeal.getThumbnail(),
                             mCurrentDishPhoto);
 
-                    //mIngredientsList.setText("sdfgh");
+                    Toast toast = Toast.makeText(mActivity.getApplicationContext(),
+                            R.string.add_in_favorite, Toast.LENGTH_SHORT);
+                    toast.show();
                 }
                 else
                 {
+                    Toast toast = Toast.makeText(mActivity.getApplicationContext(),
+                            R.string.already_in_favorite, Toast.LENGTH_SHORT);
+                    toast.show();
                     //TODO: Message with text "already in favourite" (action bar all smth like that, Idont know)
                 }
 

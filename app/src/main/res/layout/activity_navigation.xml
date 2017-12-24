@@ -3,28 +3,25 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <!-- The main content view -->
-    <!-- Этот LinearLayout отображает содержимое экрана -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <!-- ActionBar отображается сверху -->
         <include
             layout="@layout/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- Основной контентный view, куда загружаются фрагменты -->
         <FrameLayout
-            android:id="@+id/flContent"
+            android:id="@+id/main_content"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>
-    <!-- The navigation drawer -->
+
     <android.support.design.widget.NavigationView
-        android:id="@+id/navigation"
+        android:id="@+id/navigation_view"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"

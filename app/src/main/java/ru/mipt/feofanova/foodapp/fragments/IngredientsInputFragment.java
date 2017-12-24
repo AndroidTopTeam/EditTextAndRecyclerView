@@ -1,13 +1,15 @@
 package ru.mipt.feofanova.foodapp.fragments;
 
 import android.content.Context;
-import android.content.Intent;
+import android.graphics.Color;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.rey.material.widget.ProgressView;
@@ -40,6 +43,7 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
     private HttpGetRequestTask req;
     private final ArrayList<String> ingredients = new ArrayList<>();
     private ProgressView mProgressView;
+    ItemTouchHelper.SimpleCallback simpleCallback;
     final static String TAG_1 = "FRAGMENT_1";
 
     private RecyclerView mRecyclerView;
@@ -63,8 +67,6 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
 
         super.onStart();
         mActivity = (AppCompatActivity) getActivity();
-        //mActivity.setContentView(R.layout.fragment_ingredients_input);
-        //req.delegate = this;
         basicUrl = "";
         mEditText = mActivity.findViewById(R.id.edit_text);
         mRecyclerView = mActivity.findViewById(R.id.recipes_recycler_view);
@@ -72,12 +74,43 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
         mFindButton = mActivity.findViewById(R.id.find_button);
         mRecyclerView.setHasFixedSize(true);
 
-        mLayoutManager = new LinearLayoutManager(mActivity);
+        mLayoutManager = new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
         mAdapter = new mAdapter(mActivity,
                 R.layout.ingredient_button, ingredients);
         mRecyclerView.setAdapter(mAdapter);
+
+        simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                //Toast.makeText(mActivity, "on Swiped ", Toast.LENGTH_SHORT).show();
+                final int position = viewHolder.getAdapterPosition();
+                final String deletedItem = mAdapter.mDataSet.get(position);
+
+                Snackbar snackbar = Snackbar
+                        .make(mActivity.findViewById(R.id.ingredients_relative), mAdapter.mDataSet.get(position) + " deleted!", Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.cancel, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mAdapter.mDataSet.add(position, deletedItem);
+                        mAdapter.notifyItemInserted(position);
+                    }
+                });
+                mAdapter.mDataSet.remove(position);
+                mAdapter.notifyItemRemoved(position);
+                snackbar.show();
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
         mEditText.setOnKeyListener(new View.OnKeyListener()
         {
@@ -88,7 +121,7 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
                     if (keyCode == KeyEvent.KEYCODE_ENTER)
                     {
                         ingredients.add(0, mEditText.getText().toString());
-                        mAdapter.notifyDataSetChanged();
+                        mAdapter.notifyItemInserted(0);
                         mEditText.setText("");
                         return true;
                     }
@@ -130,7 +163,7 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
         fragment.setArguments(bundle);
 
         FragmentTransaction fragmentTransaction = mFragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.flContent, fragment);
+        fragmentTransaction.replace(R.id.main_content, fragment);
         fragmentTransaction.addToBackStack(null).commit();
 
     }
@@ -169,17 +202,15 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, final int position)
+        public void onBindViewHolder(final ViewHolder holder, int position)
         {
             holder.name.setText(mDataSet.get(position));
-            final mAdapter adapter = this;
             holder.button.setOnClickListener(new View.OnClickListener()
             {
                 @Override
                 public void onClick(View v)
                 {
-                    mDataSet.remove(position);
-                    adapter.notifyDataSetChanged();
+                    simpleCallback.onSwiped(holder, ItemTouchHelper.LEFT);
                 }
             });
         }
