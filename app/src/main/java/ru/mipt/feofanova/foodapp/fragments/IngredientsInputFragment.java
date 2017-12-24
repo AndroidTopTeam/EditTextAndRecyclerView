@@ -1,8 +1,12 @@
 package ru.mipt.feofanova.foodapp.fragments;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.design.widget.Snackbar;
+import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +23,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.rey.material.widget.ProgressView;
 
@@ -51,6 +57,12 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
     private String basicUrl;
     AppCompatActivity mActivity;
 
+    Animation myAnim;
+
+    private android.app.Fragment fragment2;
+    private android.app.Fragment fragment1;
+    private android.app.FragmentTransaction ft;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -66,12 +78,17 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
     {
 
         super.onStart();
+
         mActivity = (AppCompatActivity) getActivity();
         basicUrl = "";
         mEditText = mActivity.findViewById(R.id.edit_text);
         mRecyclerView = mActivity.findViewById(R.id.recipes_recycler_view);
         mProgressView = mActivity.findViewById(R.id.ingredients_progress_view);
         mFindButton = mActivity.findViewById(R.id.find_button);
+
+
+
+
         mRecyclerView.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false);
@@ -135,14 +152,33 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
             @Override
             public void onClick(View v)
             {
-                RequestUrlCreator creator = new RequestUrlCreator(ingredients);
-                req = new HttpGetRequestTask(
-                        (basicUrl = creator.makeRequestString()),
-                        mProgressView,
-                        (ViewGroup) mActivity.findViewById(R.id.ingredients_relative));
 
-                req.delegate = IngredientsInputFragment.this;
-                req.execute();
+                Animation blindAnimation;
+                blindAnimation = AnimationUtils.loadAnimation(mActivity, R.anim.myblink);
+                blindAnimation.setAnimationListener(new Animation.AnimationListener() {
+
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+                    }
+                    @Override
+                    public void onAnimationEnd(Animation arg0) {
+                        RequestUrlCreator creator = new RequestUrlCreator(ingredients);
+                        req = new HttpGetRequestTask(
+                                (basicUrl = creator.makeRequestString()),
+                                mProgressView,
+                                (ViewGroup) mActivity.findViewById(R.id.ingredients_relative));
+
+                        req.delegate = IngredientsInputFragment.this;
+                        req.execute();
+                    }
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+                    }
+
+                });
+
+                mFindButton.startAnimation(blindAnimation);
+
             }
         });
     }
@@ -167,6 +203,23 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
         fragmentTransaction.addToBackStack(null).commit();
 
     }
+
+   /* class CustomAnimation  {
+    Context ctx;
+
+    CustomAnimation(Context ctx)
+    {
+        this.ctx = ctx;
+    }
+
+    void animation () {
+        Animation anim;
+        anim = AnimationUtils.loadAnimation(this.ctx, R.anim.mycombo);
+        anim.setAnimationListener(this);
+        v.startAnimation(anim);
+    }
+
+};*/
 
     class mAdapter extends RecyclerView.Adapter<mAdapter.ViewHolder>
     {
@@ -201,16 +254,42 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
             return new ViewHolder(view);
         }
 
+        /*private Context context;
+        private View animatedView;
+        public mAdapter(Context context){
+
+            this.context = context;
+            this.animatedView = mFindButton;
+        }*/
+
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position)
+        public void onBindViewHolder(final ViewHolder holder, final int position)
         {
             holder.name.setText(mDataSet.get(position));
             holder.button.setOnClickListener(new View.OnClickListener()
             {
+
+
                 @Override
                 public void onClick(View v)
                 {
-                    simpleCallback.onSwiped(holder, ItemTouchHelper.LEFT);
+                    Animation animp;
+                    animp = AnimationUtils.loadAnimation(mActivity, R.anim.myblink);
+                    animp.setAnimationListener(new Animation.AnimationListener() {
+
+                        @Override
+                        public void onAnimationStart(Animation animation) {
+                        }
+                        @Override
+                        public void onAnimationEnd(Animation arg0) {
+                            simpleCallback.onSwiped(holder, ItemTouchHelper.LEFT);
+                        }
+                        @Override
+                        public void onAnimationRepeat(Animation animation) {
+                        }
+
+                    });
+                    holder.button.startAnimation(animp);
                 }
             });
         }
