@@ -1,22 +1,28 @@
 package ru.mipt.feofanova.foodapp.fragments;
 
 import android.graphics.Bitmap;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ru.mipt.feofanova.foodapp.DBHelper;
+import ru.mipt.feofanova.foodapp.DBHelperRemoveAtTask;
 import ru.mipt.feofanova.foodapp.GsonMealObject;
 import ru.mipt.feofanova.foodapp.ImageDownloaderTask;
 import ru.mipt.feofanova.foodapp.R;
@@ -29,11 +35,13 @@ public class FavoriteFragment extends Fragment implements ImageDownloaderTask.II
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mRecipesAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    ItemTouchHelper.SimpleCallback simpleCallback;
     private final ArrayList<String> mDataSet = new ArrayList<>();
     private final ArrayList<String> mUrlsSet = new ArrayList<>();
     private List<GsonMealObject> parsedJson;
     private ImageDownloaderTask imgResponseTask;
     private DBHelper mDBHelper;
+    AppCompatActivity mActivity;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,6 +54,65 @@ public class FavoriteFragment extends Fragment implements ImageDownloaderTask.II
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mActivity = (AppCompatActivity) getActivity();
+
+        simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                final int position = viewHolder.getAdapterPosition();
+                final String deletedItem = mDataSet.get(position);
+                final String deletedUrl = mUrlsSet.get(position);
+                Singleton.setParsedJsonResp(parsedJson);
+                final GsonMealObject currentMeal = Singleton.getInstance().getParsedJsonResp().get(position);
+
+                Snackbar snackbar = Snackbar
+                        .make(mActivity.findViewById(R.id.favorite_relative), deletedItem + " deleted!", Snackbar.LENGTH_LONG);
+                snackbar.setAction(R.string.cancel, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        parsedJson.add(currentMeal);
+                        mDataSet.add(deletedItem);
+                        mUrlsSet.add(deletedUrl);
+                        mRecipesAdapter.notifyItemInserted(mDataSet.size() - 1);
+
+                        mDBHelper.addValue(currentMeal.getTitle(), currentMeal.getIngredients(), currentMeal.getHref(),currentMeal.getThumbnail());
+                    }
+                });
+
+                DBHelperRemoveAtTask remover = new DBHelperRemoveAtTask(mActivity, deletedItem);
+                remover.execute();
+
+                parsedJson.remove(position);
+                mDataSet.remove(position);
+                mUrlsSet.remove(position);
+                mRecipesAdapter.notifyItemRemoved(position);
+
+                snackbar.show();
+            }
+        };
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mRecyclerView = getActivity().findViewById(R.id.favorite_recipes_recycler_view);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecipesAdapter = new mAdapter(mDataSet, mUrlsSet);
+        mRecyclerView.setAdapter(mRecipesAdapter);
+
+        NavigationView navigationView = mActivity.findViewById(R.id.navigation_view);
+        navigationView.getMenu().getItem(0).setChecked(true);
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(mRecyclerView);
 
         parsedJson = new ArrayList<>();
         mDBHelper = new DBHelper(getActivity());
@@ -65,6 +132,8 @@ public class FavoriteFragment extends Fragment implements ImageDownloaderTask.II
 
             }}*/
 
+        mDataSet.clear();
+        mUrlsSet.clear();
         ArrayList<ArrayList<String>> allFavourites = mDBHelper.getAllValues();
         for (int i=0;i<allFavourites.size();++i)
         {
@@ -76,17 +145,6 @@ public class FavoriteFragment extends Fragment implements ImageDownloaderTask.II
                 mUrlsSet.add(allFavourites.get(i).get(3));
             }
         }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        mRecyclerView = getActivity().findViewById(R.id.favorite_recipes_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecipesAdapter = new FavoriteFragment.mAdapter(mDataSet, mUrlsSet);
-        mRecyclerView.setAdapter(mRecipesAdapter);
     }
 
     @Override

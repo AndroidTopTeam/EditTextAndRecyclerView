@@ -1,6 +1,7 @@
 package ru.mipt.feofanova.foodapp.fragments;
 
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,14 @@ public class PropertiesFragment extends Fragment {
                 false);
 
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        NavigationView navigationView = getActivity().findViewById(R.id.navigation_view);
+        navigationView.getMenu().getItem(1).setChecked(true);
     }
 
 }

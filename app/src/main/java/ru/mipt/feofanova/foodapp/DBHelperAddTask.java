@@ -1,4 +1,4 @@
-package ru.mipt.feofanova.foodapp.fragments;
+package ru.mipt.feofanova.foodapp;
 
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
