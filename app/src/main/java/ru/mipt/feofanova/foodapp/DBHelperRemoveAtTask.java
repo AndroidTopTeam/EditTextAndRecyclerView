@@ -23,7 +23,7 @@ public class DBHelperRemoveAtTask extends AsyncTask<Void, Void, Void>
 
     @Override
     protected Void doInBackground(Void... voids) {
-        mDBHelper.removeAt(mDBHelper.countValue(dish));
+        mDBHelper.remove(dish);
         return null;
     }
 }

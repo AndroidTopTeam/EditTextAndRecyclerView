@@ -125,19 +125,19 @@ public class MenuFragment extends Fragment implements ImageDownloaderTask.IImage
             public void onClick(View view) {
                 //save in favorites
                 if (!isInFavourite) {
-                    mFloatingActionButton.setImageResource(R.drawable.star);
 
-                    DBHelperAddTask adder = new DBHelperAddTask(mActivity, currentMeal.getTitle(), currentMeal.getIngredients(),
+
+                    /*DBHelperAddTask adder = new DBHelperAddTask(mActivity, currentMeal.getTitle(), currentMeal.getIngredients(),
                             currentMeal.getHref(),
-                            Calendar.getInstance().get(Calendar.DST_OFFSET) + "" +
-                                    Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + "",
-                            currentMeal.getThumbnail(),
-                            mCurrentDishPhoto);
-                    adder.execute();
+                            currentMeal.getThumbnail();
+                    adder.execute();*/
+                    mDBHelper.addValue(currentMeal.getTitle(), currentMeal.getIngredients(), currentMeal.getHref(),currentMeal.getThumbnail());
                     Toast toast = Toast.makeText(mActivity.getApplicationContext(),
                             R.string.add_in_favorite, Toast.LENGTH_SHORT);
+
                     isInFavourite = true;
                     toast.show();
+                    mFloatingActionButton.setImageResource(R.drawable.star);
                 } else {
                     mFloatingActionButton.setImageResource(R.drawable.star_grey);
 
