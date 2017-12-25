@@ -9,16 +9,14 @@
     <string name="next">Next</string>
     <string name="recipe_deleted">The recipe was just deleted \n from favorites!</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
     <string name="favorite">Favorite meals</string>
     <string name="properties">Properties</string>
     <string name="search">Search for recipe</string>
-    <string name="already_in_favorite">This recipe has already been added to your favorites!</string>
-    <string name="add_in_favorite">This recipe is now in your favorites!</string>
+    <string name="notification_recipe">The recipe</string>
+    <string name="add_in_favorite"> is now in your favorites!</string>
+    <string name="notification_favorite">Add to favorites</string>
     <string name="cancel">cancel</string>
-    <string name="removed">Removed</string>
+    <string name="removed">removed from favorites</string>
 
 </resources>
 
