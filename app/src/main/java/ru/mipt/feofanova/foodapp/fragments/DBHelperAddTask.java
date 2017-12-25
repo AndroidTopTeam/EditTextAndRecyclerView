@@ -34,7 +34,7 @@ public class DBHelperAddTask extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
-        mDBHelper.addValue(name, ingredients, recipe, path, imageHref, img);
+        mDBHelper.addValue(name, ingredients, recipe, imageHref);
         return null;
     }
 }

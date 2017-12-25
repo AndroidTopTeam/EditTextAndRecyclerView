@@ -55,14 +55,25 @@ public class FavoriteFragment extends Fragment implements ImageDownloaderTask.II
             mDBHelper.removeLast();*/
         ArrayList<String> favorites;
 
-        for (int i = 0; i < numFavourite; ++i) {
-            favorites = mDBHelper.getValues(i + 1);
-            if (favorites.get(0).length() > 0) {
-                GsonMealObject temp = new GsonMealObject(favorites.get(0), favorites.get(2), favorites.get(1), favorites.get(4));
+        /*for (int i = 0; i < numFavourite; ++i) {
+            favorites = mDBHelper.getValues(i + 1 );
+            if (favorites.size() > 0) {
+                GsonMealObject temp = new GsonMealObject(favorites.get(0), favorites.get(2), favorites.get(1), favorites.get(3));
                 parsedJson.add(temp);
                 mDataSet.add(favorites.get(0));
-                mUrlsSet.add(favorites.get(4));
+                mUrlsSet.add(favorites.get(3));
 
+            }}*/
+
+        ArrayList<ArrayList<String>> allFavourites = mDBHelper.getAllValues();
+        for (int i=0;i<allFavourites.size();++i)
+        {
+            if(allFavourites.get(i).size()>0)
+            {
+                GsonMealObject temp = new GsonMealObject(allFavourites.get(i).get(0), allFavourites.get(i).get(2), allFavourites.get(i).get(1), allFavourites.get(i).get(3));
+                parsedJson.add(temp);
+                mDataSet.add(allFavourites.get(i).get(0));
+                mUrlsSet.add(allFavourites.get(i).get(3));
             }
         }
     }

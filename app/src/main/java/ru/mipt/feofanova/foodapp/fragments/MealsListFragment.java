@@ -101,9 +101,7 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
             reqBody = savedInstanceState.getString("reqBody");
             try {
                 parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
-            }
-            catch(Exception e)
-            {
+            } catch (Exception e) {
                 Log.e("Err gson, empty json", e.getMessage());
             }
         }
@@ -153,6 +151,8 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
                 } catch (Exception e) {
                     Log.e("Error", e.getMessage());
                 }
+                //next.setActivated(true);
+                next.setEnabled(true);
                 mRecipesAdapter.notifyDataSetChanged();
             }
         });
@@ -168,6 +168,10 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
 
                     Log.e("----------------BSICURL", basicUrl);
                     basicUrl = creator.changePage(basicUrl, +1);
+
+                    if(( basicUrl.charAt(basicUrl.length() - 1) == '9')) {
+                        return;
+                    }
                     Log.e("----------------BSICURL", basicUrl);
                     newMealsTask = new HttpGetRequestTask(basicUrl, mProgressNext, (ViewGroup) mActivity.findViewById(R.id.recipes_recycler_view));
                     newMealsTask.delegate = MealsListFragment.this;
@@ -175,9 +179,16 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
                         newMealsTask.execute();
                     } catch (Exception e) {
                         Log.e("ErrorRequest", e.getMessage());
+                        next.setEnabled(false);
+                        mRecipesAdapter.notifyDataSetChanged();
                     }
                 } catch (Exception e) {
                     Log.e("Error", e.getMessage());
+                    //next.setActivated(false);
+                    next.setEnabled(false);
+                    mDataSet1.clear();
+                    mUrlsSet1.clear();
+                    mRecipesAdapter.notifyDataSetChanged();
                 }
                 mRecipesAdapter.notifyDataSetChanged();
 
@@ -205,9 +216,7 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
         if (reqBody != "404") {
             try {
                 parsedJson = new Gson().fromJson(reqBody, GsonMealsObjectsList.class).getResults();
-            }
-            catch(Exception e)
-            {
+            } catch (Exception e) {
                 Log.e("Err gson, empty json", e.getMessage());
             }
             for (GsonMealObject i : parsedJson) {
