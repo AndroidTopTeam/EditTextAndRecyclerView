@@ -4,6 +4,7 @@ import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Color;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.content.Intent;
 import android.graphics.Color;
@@ -57,12 +58,6 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
     private String basicUrl;
     AppCompatActivity mActivity;
 
-    Animation myAnim;
-
-    private android.app.Fragment fragment2;
-    private android.app.Fragment fragment1;
-    private android.app.FragmentTransaction ft;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -74,29 +69,10 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
     }
 
     @Override
-    public void onStart()
-    {
-
-        super.onStart();
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         mActivity = (AppCompatActivity) getActivity();
-        basicUrl = "";
-        mEditText = mActivity.findViewById(R.id.edit_text);
-        mRecyclerView = mActivity.findViewById(R.id.recipes_recycler_view);
-        mProgressView = mActivity.findViewById(R.id.ingredients_progress_view);
-        mFindButton = mActivity.findViewById(R.id.find_button);
-
-
-
-
-        mRecyclerView.setHasFixedSize(true);
-
-        mLayoutManager = new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false);
-        mRecyclerView.setLayoutManager(mLayoutManager);
-
-        mAdapter = new mAdapter(mActivity,
-                R.layout.ingredient_button, ingredients);
-        mRecyclerView.setAdapter(mAdapter);
 
         simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
@@ -107,7 +83,6 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                //Toast.makeText(mActivity, "on Swiped ", Toast.LENGTH_SHORT).show();
                 final int position = viewHolder.getAdapterPosition();
                 final String deletedItem = mAdapter.mDataSet.get(position);
 
@@ -125,6 +100,30 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
                 snackbar.show();
             }
         };
+    }
+
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+
+        basicUrl = "";
+        mEditText = mActivity.findViewById(R.id.edit_text);
+        mRecyclerView = mActivity.findViewById(R.id.recipes_recycler_view);
+        mProgressView = mActivity.findViewById(R.id.ingredients_progress_view);
+        mFindButton = mActivity.findViewById(R.id.find_button);
+
+        NavigationView navigationView = mActivity.findViewById(R.id.navigation_view);
+        navigationView.getMenu().getItem(2).setChecked(true);
+
+        mRecyclerView.setHasFixedSize(true);
+
+        mLayoutManager = new LinearLayoutManager(mActivity, LinearLayoutManager.VERTICAL, false);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mAdapter = new mAdapter(mActivity,
+                R.layout.ingredient_button, ingredients);
+        mRecyclerView.setAdapter(mAdapter);
 
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
         itemTouchHelper.attachToRecyclerView(mRecyclerView);
@@ -203,23 +202,6 @@ public class IngredientsInputFragment extends Fragment implements HttpGetRequest
         fragmentTransaction.addToBackStack(null).commit();
 
     }
-
-   /* class CustomAnimation  {
-    Context ctx;
-
-    CustomAnimation(Context ctx)
-    {
-        this.ctx = ctx;
-    }
-
-    void animation () {
-        Animation anim;
-        anim = AnimationUtils.loadAnimation(this.ctx, R.anim.mycombo);
-        anim.setAnimationListener(this);
-        v.startAnimation(anim);
-    }
-
-};*/
 
     class mAdapter extends RecyclerView.Adapter<mAdapter.ViewHolder>
     {

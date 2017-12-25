@@ -1,6 +1,7 @@
 package ru.mipt.feofanova.foodapp.fragments;
 
 import android.content.Context;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.graphics.Bitmap;
 
@@ -110,6 +111,11 @@ public class MealsListFragment extends Fragment implements ImageDownloaderTask.I
     @Override
     public void onStart() {
         super.onStart();
+
+        NavigationView navigationView = mActivity.findViewById(R.id.navigation_view);
+        for (int i = 0; i < navigationView.getMenu().size(); i++) {
+            navigationView.getMenu().getItem(i).setChecked(false);
+        }
 
         View view = mActivity.getCurrentFocus();
         if (view != null) {
