@@ -152,7 +152,7 @@ public class MenuFragment extends Fragment implements ImageDownloaderTask.IImage
 
                     Notification.Builder builder = new Notification.Builder(mActivity);
 
-                    String notificationString = getString(R.string.notification_recipe) + " " + currentMeal.getTitle() + getString(R.string.add_in_favorite);
+                    String notificationString = getString(R.string.notification_recipe) + " " + currentMeal.getTitle() + " " + getString(R.string.add_in_favorite);
                     builder.setContentIntent(contentIntent)
                             .setSmallIcon(R.drawable.star)
                             .setContentTitle(getString(R.string.notification_favorite))
