@@ -26,6 +26,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.widget.Toast;
 
 import ru.mipt.feofanova.foodapp.DBHelper;
+import ru.mipt.feofanova.foodapp.DBHelperAddTask;
 import ru.mipt.feofanova.foodapp.DBHelperRemoveAtTask;
 import ru.mipt.feofanova.foodapp.FavouriteButtonColorChangerTask;
 import ru.mipt.feofanova.foodapp.GsonMealObject;
@@ -133,14 +134,12 @@ public class MenuFragment extends Fragment implements ImageDownloaderTask.IImage
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //save in favorites
+                //
+                // save in favorites
                 if (!isInFavourite) {
 
 
-                    /*DBHelperAddTask adder = new DBHelperAddTask(mActivity, currentMeal.getTitle(), currentMeal.getIngredients(),
-                            currentMeal.getHref(),
-                            currentMeal.getThumbnail();
-                    adder.execute();*/
+
                     mDBHelper.addValue(currentMeal.getTitle(), currentMeal.getIngredients(), currentMeal.getHref(),currentMeal.getThumbnail());
                     isInFavourite = true;
                     mFloatingActionButton.setImageResource(R.drawable.star);
